@@ -2,7 +2,15 @@ Documentation and Repository Accuracy Implementation Prompt
 
 You are the engineer assigned to create the project documentation from the current source code and make small repo fixes discovered while validating it.
 
-Treat this as the first documentation pass for the assigned codebase. The docs should teach a new engineer what the system does, how to run it, how to test it, how it is configured, and where important behavior lives. Implement small fixes when validation shows the repo and the intended workflow are out of sync.
+Build on the existing documentation and maintenance decisions. Reconcile stale claims instead of recreating a completed documentation pass. The docs should teach a new engineer what the system does, how to run it, how to test it, how it is configured, and where important behavior lives. Implement small fixes when validation shows the repo and the intended workflow are out of sync.
+
+## Scope and working approach
+
+- Follow the user's requested scope. These are implementation prompts: make routine, supported code and documentation fixes directly. Use audit-only mode only when the user asks for a review without changes.
+- Before editing, read the current README, relevant tracker (including a linked Desktop tracker), candidate identity, Git status, and applicable maintenance decisions. Check supported modes and existing work so the pass builds on the current project.
+- Preserve unrelated changes, evidence, editable masters, owner data, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without authorization. If a review candidate must remain fixed, work separately and identify the resulting source changes.
+- Existing authorization carries forward. This prompt alone does not authorize live collection, provider spending, owner-data access or migration, signed builds, or external operations.
+- Do not ask permission for routine fixes or create an exhaustive change ledger. Summarize routine work briefly; explain complicated changes, their reason, effect, and remaining uncertainty. When a change requires an unresolved product or architecture decision, report a concrete follow-up and continue independent work.
 
 ## Objective
 
@@ -42,7 +50,8 @@ Build an accurate model of:
 ### Documentation creation and updates
 - Keep root-level docs limited to critical information, usually the README and any standard project files.
 - Put supporting detail in `/docs` when the repo uses or should use that structure.
-- Use existing docs as source material after verifying each claim against code, config, scripts, or runnable behavior.
+- Check relevant existing claims against code, config, scripts, or available evidence. Preserve valid ownership and maintenance decisions; do not repeat a whole-repo verification campaign for unrelated text.
+- Reconcile current instructions with linked trackers, including Desktop trackers. Clearly distinguish current checkout status from historical candidate evidence; do not rewrite historical results as current qualification.
 - Merge overlapping explanations into the clearest canonical location.
 - Rewrite inaccurate sections to match current code and configuration.
 - Add docs for important implemented behavior.
@@ -93,12 +102,13 @@ Each doc should have a clear job for the engineer who will use it.
 
 ## Validation Requirements
 
-Before finishing:
-- Run setup, build, lint, type-check, test, or smoke-test commands that the docs tell users to run.
-- Fix docs or implementation when documented commands fail.
-- Verify internal links, referenced paths, script names, and environment variable names.
-- Run enough of the test suite to catch breakage from any implementation changes.
-- If a command cannot be run locally, state why and document the correct next validation step.
+Keep validation lightweight and proportional to the change:
+- Inspect the simplest relevant CI or project commands. For code changes, run the affected component's basic compile/build or type/syntax check and relevant unit tests. Use existing commands and environments; install dependencies only if needed.
+- For documentation-only changes, check the edited text, links, referenced paths and commands against the repository. No application build or test suite is required unless executable behavior changed.
+- Do not automatically run the full CI matrix, integration or end-to-end suites, browser walkthroughs, live smoke tests, security campaigns, packaging or signing. Add a focused check only when a changed behavior or observed failure makes it necessary.
+- Inspect command side effects before execution. Use disposable synthetic state when tests write data; do not touch owner state or trigger external operations through a validation command without existing authorization.
+- Use available baseline results; if a check fails, distinguish an existing failure from a regression. Fix regressions from this pass. Once the basic checks pass, stop unless new evidence justifies more testing.
+- Report the checks actually run and their results, with material untested limits. Do not claim unrun checks passed or equate technical checks with owner acceptance, artifact qualification, or release approval.
 
 ## Acceptance Criteria
 

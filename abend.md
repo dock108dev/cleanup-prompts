@@ -4,6 +4,14 @@ You are the engineer assigned to harden error handling for this source tree.
 
 Work from the code in front of you. Build an understanding of how failures move through the application, implement the appropriate changes, write the docs an engineer needs to operate this behavior, and run the relevant validation before handing it back.
 
+## Scope and working approach
+
+- Follow the user's requested scope. These are implementation prompts: make routine, supported code and documentation fixes directly. Use audit-only mode only when the user asks for a review without changes.
+- Before editing, read the current README, relevant tracker (including a linked Desktop tracker), candidate identity, Git status, and applicable maintenance decisions. Check supported modes and existing work so the pass builds on the current project.
+- Preserve unrelated changes, evidence, editable masters, owner data, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without authorization. If a review candidate must remain fixed, work separately and identify the resulting source changes.
+- Existing authorization carries forward. This prompt alone does not authorize live collection, provider spending, owner-data access or migration, signed builds, or external operations.
+- Do not ask permission for routine fixes or create an exhaustive change ledger. Summarize routine work briefly; explain complicated changes, their reason, effect, and remaining uncertainty. When a change requires an unresolved product or architecture decision, report a concrete follow-up and continue independent work.
+
 ## Objective
 
 Make production-path error handling explicit, observable, and appropriate.
@@ -58,6 +66,15 @@ Inspect the full repository for patterns including:
 - circuit breakers
 - health checks that treat failures as soft failures
 
+### Cancellation, shutdown and recovery
+- cancellation propagation and bounded task/process shutdown
+- resource ownership and cleanup failures that can mask the original error
+- partial writes, transaction boundaries, crash recovery and duplicate retries
+- accurate durable/partial/unknown status after storage failures
+- safe error details: preserve useful diagnostics without exposing credentials, private payloads or sensitive subprocess output
+
+Review broad catches in context, including ownership boundaries and existing recovery behavior. Narrow them when that fixes a demonstrated problem; do not remove deliberate handling merely because a catch is broad.
+
 ### Environment-specific strictness
 - production and non-production behavior differences
 - debug-mode checks
@@ -79,7 +96,7 @@ For each meaningful issue you find, implement the most appropriate outcome:
    - Narrow broad catches.
    - Re-raise unexpected errors.
    - Fail closed where appropriate.
-   - Preserve stack traces.
+   - Preserve stack traces in appropriate private diagnostics; redact sensitive content and keep public errors safe.
    - Avoid returning misleading success.
    - Replace silent defaults with explicit errors or typed fallback results.
 
@@ -159,12 +176,13 @@ Also inspect:
 
 ## Validation Requirements
 
-Before finishing:
-- Run the relevant formatter, linter, type checks, unit tests, integration tests, and smoke tests available in the repo.
-- If the repo has no clear validation command, inspect package scripts, task runners, CI configuration, Makefiles, or project docs and run the closest appropriate checks.
-- Add or update tests for any behavior you change.
-- Verify your changes introduce no new warnings or failures.
-- If a check cannot be run locally, explain exactly why and what should be run elsewhere.
+Keep validation lightweight and proportional to the change:
+- Inspect the simplest relevant CI or project commands. For code changes, run the affected component's basic compile/build or type/syntax check and relevant unit tests. Use existing commands and environments; install dependencies only if needed.
+- For documentation-only changes, check the edited text, links, referenced paths and commands against the repository. No application build or test suite is required unless executable behavior changed.
+- Do not automatically run the full CI matrix, integration or end-to-end suites, browser walkthroughs, live smoke tests, security campaigns, packaging or signing. Add a focused check only when a changed behavior or observed failure makes it necessary.
+- Inspect command side effects before execution. Use disposable synthetic state when tests write data; do not touch owner state or trigger external operations through a validation command without existing authorization.
+- Use available baseline results; if a check fails, distinguish an existing failure from a regression. Fix regressions from this pass. Once the basic checks pass, stop unless new evidence justifies more testing.
+- Report the checks actually run and their results, with material untested limits. Do not claim unrun checks passed or equate technical checks with owner acceptance, artifact qualification, or release approval.
 
 ## Final Response
 

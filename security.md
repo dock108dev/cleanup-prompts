@@ -4,6 +4,14 @@ You are the engineer assigned to improve this repository's security posture.
 
 Work from the current source code. First understand the application and its trust boundaries, then implement safe hardening changes, write or update security-relevant docs, add or update tests, and run validation to make sure the project still works.
 
+## Scope and working approach
+
+- Follow the user's requested scope. These are implementation prompts: make routine, supported code and documentation fixes directly. Use audit-only mode only when the user asks for a review without changes.
+- Before editing, read the current README, relevant tracker (including a linked Desktop tracker), candidate identity, Git status, and applicable maintenance decisions. Check supported modes and existing work so the pass builds on the current project.
+- Preserve unrelated changes, evidence, editable masters, owner data, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without authorization. If a review candidate must remain fixed, work separately and identify the resulting source changes.
+- Existing authorization carries forward. This prompt alone does not authorize live collection, provider spending, owner-data access or migration, signed builds, or external operations.
+- Do not ask permission for routine fixes or create an exhaustive change ledger. Summarize routine work briefly; explain complicated changes, their reason, effect, and remaining uncertainty. When a change requires an unresolved product or architecture decision, report a concrete follow-up and continue independent work.
+
 ## Objective
 
 Identify and fix meaningful security issues in this repo while preserving intended product behavior.
@@ -123,6 +131,16 @@ Inspect the repo for actual, code-backed issues in these categories.
 - debug flags affecting production safety
 - unclear separation between public and private config
 
+### Local desktop, loopback and subprocess boundaries
+Where applicable, inspect:
+- loopback-only binding, Host/Origin validation, local session authentication and browser-triggered mutations
+- desktop-to-sidecar permissions and trust in process identity or bootstrap data
+- subprocess executable selection, argument handling, inherited environment, timeouts and output redaction
+- filesystem permissions, symlinks/path traversal, private temporary files and safe writes
+- credential-store access, secret lifetime and accidental exposure in logs, command arguments or diagnostics
+
+Use the actual local threat model; do not add a hosted-service security stack to a personal prototype without a demonstrated need.
+
 ### Data protection and privacy
 - sensitive data logged
 - private or personal data exposed
@@ -163,6 +181,8 @@ Where relevant, inspect and improve:
 - cookie security flags
 - cache control for sensitive pages
 - noindex behavior for internal/admin/auth pages
+
+Noindex controls search indexing; it is not authentication, authorization, or protection for private data. Apply web headers according to the actual deployment and transport.
 
 ### Abuse and business logic risks
 - spam or automation abuse
@@ -223,12 +243,13 @@ Keep categories separate:
 
 ## Validation Requirements
 
-Before finishing:
-- Run relevant formatter, linter, type checks, unit tests, integration tests, and smoke tests.
-- Run security-specific checks if the repo already provides them.
-- Add or update tests for security behavior you change.
-- Confirm docs and sample config match the implemented security behavior.
-- If a check cannot be run locally, explain exactly why and what should be run elsewhere.
+Keep validation lightweight and proportional to the change:
+- Inspect the simplest relevant CI or project commands. For code changes, run the affected component's basic compile/build or type/syntax check and relevant unit tests. Use existing commands and environments; install dependencies only if needed.
+- For documentation-only changes, check the edited text, links, referenced paths and commands against the repository. No application build or test suite is required unless executable behavior changed.
+- Do not automatically run the full CI matrix, integration or end-to-end suites, browser walkthroughs, live smoke tests, security campaigns, packaging or signing. Add a focused check only when a changed behavior or observed failure makes it necessary.
+- Inspect command side effects before execution. Use disposable synthetic state when tests write data; do not touch owner state or trigger external operations through a validation command without existing authorization.
+- Use available baseline results; if a check fails, distinguish an existing failure from a regression. Fix regressions from this pass. Once the basic checks pass, stop unless new evidence justifies more testing.
+- Report the checks actually run and their results, with material untested limits. Do not claim unrun checks passed or equate technical checks with owner acceptance, artifact qualification, or release approval.
 
 ## Final Response
 
