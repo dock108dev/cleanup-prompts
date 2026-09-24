@@ -18,6 +18,7 @@ Leave the repository in a state where:
 - A new engineer can understand what the system does.
 - Setup and test instructions work.
 - Docs describe implemented behavior.
+- README, core docs, and source comments make sense without knowing the project's internal tasks, slices, phases, or implementation history.
 - Examples, paths, and commands are verified.
 - Small repo defects discovered while validating docs are corrected.
 - The test/build surface still passes.
@@ -57,6 +58,25 @@ Build an accurate model of:
 - Add docs for important implemented behavior.
 - Keep docs explicit and operational: commands, environment variables, services, data flows, and known limitations.
 - Create docs that directly help engineers run, test, operate, or modify the project.
+
+### Keep development history out of lasting documentation
+
+Prepare the documentation for readers of `main`: users, contributors, reviewers, and external tools should learn what exists today without reconstructing how the team built it. Apply this during ordinary documentation cleanup and before a merge; this prompt does not itself authorize merging.
+
+- Inspect the README, core setup/architecture/API/testing/operations docs, docstrings, source comments, examples, and explanatory text in scripts and tests for internal planning language. Look for numbered slices, phases, tasks, ranks, milestones, work packets, and shorthand such as `B2`, `B9`, or `T1/T2`, as well as handoff narratives and stale next-task instructions. Search by context; these terms can also describe legitimate product concepts.
+- Rewrite affected passages around the current feature, responsibility, contract, constraint, or reason. Remove progress narration such as “added in Slice 8,” “Phase 2 complete,” “for Task 4,” and “the next engineer should implement B3.” Do not simply strip the label and leave an unclear sentence.
+- Keep useful technical detail: behavior, assumptions, invariants, design rationale, compatibility requirements, known limitations, and operational instructions. Comments should explain the code and why a decision matters now. Replace completed TODOs; move planning-only follow-ups to the designated tracker while retaining any current limitation where readers need it.
+- Keep working plans, task breakdowns, handoffs, acceptance records, and historical evidence in an existing designated location such as `docs/planning/`, `docs/history/`, or clearly named engineering tracker/record files. A file being under `docs/` does not by itself make it a history file: core docs still need to stand on their own. Prefer the repo's established locations and avoid creating a second tracker or an exhaustive migration ledger.
+- Consolidate scattered planning narrative into that location only when it is still useful and editable. Preserve immutable evidence, historical results, exact candidate identities, and frozen review artifacts unchanged. Fix links when moving editable material; link to retained records where needed instead of copying their chronology into core docs.
+- State current support and release limitations plainly. For example, describe a locally delivered build and its pending owner review without requiring readers to understand “B9/B10.” Keep precise build identifiers and evidence links where they establish which artifact a claim concerns. Removing planning jargon must never turn technical verification into owner acceptance or release approval.
+- Use descriptive headings and link labels in the README and core docs. A reader should be able to complete setup, understand behavior, and find limitations without opening an internal task tracker. Link to engineering history only where useful; do not make it the main product explanation.
+- Do not perform a blind repository-wide replacement. Preserve meaningful domain terms such as a scheduler task, game phase, or array slice, along with real release/schema/API versions, issue references that explain a current constraint, and necessary provenance. Do not rename public APIs, persisted fields, migrations, fixture IDs, evidence paths, or hashed content just to remove planning labels. If these require broader migration work, record that separately; clean up surrounding prose now.
+- Treat user-visible messages or generated documentation containing the same jargon as cleanup candidates too. If changing them affects executable behavior or contracts, use the repository-fix and proportional-validation rules below.
+
+Examples of the intended rewrite (verify the underlying facts first):
+- “Slice 8 matching layer” → “Matches venue markets using authoritative snapshots.”
+- “B2 adds the bounded Mario conversation and custom-plan flow” → “Supports Mario conversations and custom plans within the documented editing limits.”
+- “B1–B9 technically complete; B10 pending” → describe the available functionality, the exact delivered build where relevant, and the outstanding owner review in ordinary language.
 
 ### Repository fixes
 When doc validation reveals small repo problems, fix them directly:
@@ -99,12 +119,14 @@ Potential `/docs` files:
 - `operations.md`
 
 Each doc should have a clear job for the engineer who will use it.
+Keep internal plans and history in a clearly designated subsection or files, separate from these current-behavior references.
 
 ## Validation Requirements
 
 Keep validation lightweight and proportional to the change:
 - Inspect the simplest relevant CI or project commands. For code changes, run the affected component's basic compile/build or type/syntax check and relevant unit tests. Use existing commands and environments; install dependencies only if needed.
 - For documentation-only changes, check the edited text, links, referenced paths and commands against the repository. No application build or test suite is required unless executable behavior changed.
+- Repeat a targeted search of current-facing docs, comments, and explanatory text for planning labels and progress narratives. Review remaining matches in context, confirm they are meaningful domain/version/provenance references or belong in designated planning/history records, and check that rewritten passages preserve the actual behavior and limitations. Do not require zero keyword matches across the repo.
 - Do not automatically run the full CI matrix, integration or end-to-end suites, browser walkthroughs, live smoke tests, security campaigns, packaging or signing. Add a focused check only when a changed behavior or observed failure makes it necessary.
 - Inspect command side effects before execution. Use disposable synthetic state when tests write data; do not touch owner state or trigger external operations through a validation command without existing authorization.
 - Use available baseline results; if a check fails, distinguish an existing failure from a regression. Fix regressions from this pass. Once the basic checks pass, stop unless new evidence justifies more testing.
@@ -114,6 +136,8 @@ Keep validation lightweight and proportional to the change:
 
 - README accurately explains what the repo is, how to run it, how to test it, and where deeper docs live.
 - Supporting docs are current, consolidated, and useful.
+- README, core docs, and source comments describe the product and code directly, without scattered task/slice/phase chronology or unexplained internal milestone labels.
+- Useful planning history remains in designated records; evidence, technical rationale, exact artifact identity, and current limitations are preserved.
 - Broken references are fixed.
 - Small repo issues found during doc validation are implemented.
 - Relevant tests/checks pass.
@@ -123,6 +147,7 @@ Keep validation lightweight and proportional to the change:
 
 Include:
 - Docs added, updated, consolidated, or removed.
+- Briefly state where planning/history is retained and any material exceptions still requiring follow-up; do not reproduce the task-by-task history in the summary.
 - Implementation fixes made while validating docs.
 - Commands/checks run and results.
 - Behavior documented as an explicit limitation because it could not be verified.
