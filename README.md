@@ -3,7 +3,7 @@
 Reusable prompts for implementing focused repository maintenance. Choose a prompt, apply it to the target repository, and follow its scope and validation requirements.
 
 - [Documentation cleanup](docs.md): accurate current-behavior docs and comments, with planning history kept in designated records.
-- [Repository cleanup](cleanup.md): code structure, readability, maintainability, and documentation.
+- [Repository cleanup](cleanup.md): code structure, readability, documentation, current Git ignore rules, and removal of unnecessary tracked artifacts while preserving local copies.
 - [Product clarity cleanup](ui-ux-cleanup.md): concise interface text, useful layouts, and clear actions.
 - [Error handling](abend.md): failure diagnosis, recovery, and operational clarity.
 - [Security](security.md): repository security review and supported fixes.

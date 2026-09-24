@@ -49,6 +49,16 @@ The finished repo should be easier to understand, easier to run, and safer for t
 - Verify examples, sample configs, scaffolding, scripts, and environment templates are current and minimal.
 - Keep behavior stable unless cleanup exposes a clear bug.
 
+### Git ignores and tracked artifacts
+- Review the current ignore rules and tracked files for generated test evidence, debug screenshots, recordings, logs, caches, build output, temporary files, and redundant source snapshots. Updating `.gitignore` alone does not remove already tracked files.
+- Check how candidate files are used before removing them from tracking. Preserve required test/replay fixtures, runtime assets, editable source art, authored build tools, and frozen builds used by supported launchers. Do not blanket-ignore image, data, or build directories that contain authored inputs.
+- Update ignore rules to cover disposable output, using narrow exceptions for required inputs and safe environment templates. Keep credentials and local owner state excluded.
+- Remove unnecessary tracked artifacts from the Git index while preserving existing local copies and retained evidence. Do not delete local evidence or alter a frozen candidate to tidy the remote tree.
+- Keep cleanup changes separate from unrelated staged or unfinished work. Commit and push only with existing authorization; when remote cleanup is requested and authorized, complete the push and verify the remote branch contains the cleanup.
+- Normal removal affects the current remote tree, not older commits or historical repository size. Do not rewrite history, force-push, or purge retained artifacts without separate explicit authorization.
+- Verify removed files remain locally available, are no longer tracked, and match the intended ignore rules. Check that required source and fixtures remain tracked. Where removal could affect execution, run focused checks from a clean export or checkout so leftover local files cannot hide missing dependencies.
+- Keep historical report references truthful: identify evidence that is now local-only and fix active setup or test instructions that would otherwise require untracked files.
+
 ### Tests and project health
 - Update tests when cleanup changes module boundaries, names, imports, or expected behavior.
 - Remove tests that cover deleted unused code.
@@ -58,7 +68,7 @@ The finished repo should be easier to understand, easier to run, and safer for t
 ## Implementation Workflow
 
 1. Inventory the project structure, docs, scripts, entry points, and validation commands.
-2. Identify cleanup targets: unused code, oversized files, duplication, inaccurate comments, broken references, and inconsistent naming.
+2. Identify cleanup targets: unused code, oversized files, duplication, inaccurate comments, broken references, inconsistent naming, stale ignore rules, and unnecessary tracked artifacts.
 3. Make small, coherent edits that preserve behavior.
 4. Write or update docs from the implemented repository.
 5. Run the basic relevant build/check and unit tests described below.
@@ -82,6 +92,7 @@ Keep validation lightweight and proportional to the change:
 - README is lean and points to deeper docs where appropriate.
 - Supporting docs are organized, accurate, and useful.
 - Unused code, inaccurate comments, and obvious leftovers are removed.
+- Ignore rules cover generated output; unnecessary tracked artifacts are untracked with local copies preserved, while required inputs remain available in a fresh checkout.
 - Large unused blocks and abandoned experiments are removed.
 - Structural changes improve maintainability rather than merely reducing line counts.
 - Edited code follows existing formatting conventions; relevant basic checks pass or failures are explained.
@@ -94,5 +105,6 @@ Include:
 - Documentation changes.
 - Code structure changes.
 - Tests/checks run and results.
+- Repository hygiene changes, local-copy preservation, and actual commit/push status; distinguish current-tree removal from history cleanup.
 - Complicated structural changes and any newly relevant retention decisions.
 - Follow-up work that should be handled separately.
