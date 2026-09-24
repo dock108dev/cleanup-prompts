@@ -59,6 +59,24 @@ Build an accurate model of:
 - Keep docs explicit and operational: commands, environment variables, services, data flows, and known limitations.
 - Create docs that directly help engineers run, test, operate, or modify the project.
 
+### Write for a public repository, not the maintainer’s workspace
+
+This is a primary acceptance requirement, not a tone-only polish. Public docs must stand on their own for someone who has just cloned the repository.
+
+- Keep the subject inside this repository. Mention something outside it only when it is a direct dependency, an integration, or an authoritative reference needed to use or understand the project. State the actual relationship. A tool or template once used by the maintainer is not a project dependency.
+- Remove references to local template galleries, sibling projects, Desktop folders, personal absolute paths, private trackers, internal prompts, agent handoffs, and organization-specific routines that are not part of the supported project. Do not replace them with notices explaining that those private resources are missing or unavailable. Remove the irrelevant context entirely.
+- Verify apparent dependencies against code, configuration, or supported commands. If a private resource is truly required, identify the concrete setup gap and provide a portable, repository-owned replacement when that is a small supported fix. Otherwise state the real requirement or limitation and report the follow-up; do not invent a public substitute or claim setup works.
+- Keep the README centered on purpose, useful capabilities, a concise working quickstart, essential requirements and limitations, and links to relevant project docs. Move necessary contributor detail to an appropriate guide. Do not turn the README into an internal onboarding manual, maintainer diary, owner-review checklist, or agent operating procedure.
+- Document project-specific steps and pitfalls. Cut generic coaching, repetitive cautions, exhaustive validation narration, and handholding that does not help a reader use or contribute to this project. Do not create a guide for every possible topic merely to fill a documentation structure.
+- Retain real security, data-loss, compatibility, and support constraints where readers need them. Express them as concrete project behavior or requirements, without importing private approval rituals or business-process language.
+- Apply this boundary to supporting docs, examples, comments, generated docs, and link labels as well as the README. Moving irrelevant private context into another public file does not resolve it. Preserve existing immutable records where required, but do not make them prerequisites for understanding or using the project.
+
+Examples (verify the actual dependency first):
+- “Use the shared Desktop UI Templates gallery” → remove when the gallery is only a maintainer design reference; document the repo’s actual styling conventions if useful.
+- “The local templates are unavailable; do not make them a prerequisite” → remove the entire aside when the project does not depend on them.
+- “Read the owner’s Desktop tracker before running the app” → replace with the actual repository-local setup steps and current limitations.
+- “Requires PostgreSQL” → retain with the supported version and configuration when the application actually depends on it.
+
 ### Keep development history out of lasting documentation
 
 Prepare the documentation for readers of `main`: users, contributors, reviewers, and external tools should learn what exists today without reconstructing how the team built it. Apply this during ordinary documentation cleanup and before a merge; this prompt does not itself authorize merging.
