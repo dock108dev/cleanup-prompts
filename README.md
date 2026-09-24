@@ -1,9 +1,15 @@
 # Cleanup prompts
 
-Reusable engineering prompt documents; this project has no application interface to restyle.
+Reusable prompts for implementing focused repository maintenance. Choose a prompt, apply it to the target repository, and follow its scope and validation requirements.
 
-- [Product clarity cleanup](ui-ux-cleanup.md): reduce unnecessary text, scrolling, and label-heavy UI; include separate suggestions for larger issues.
-- [Template comparison and verification](../ui-templates/review/starter-02/verification.md): measured Starter 02 improvements and remaining app adoption work.
-- [Repository cleanup](cleanup.md): code structure, maintainability, and documentation.
+- [Documentation cleanup](docs.md): accurate current-behavior docs and comments, with planning history kept in designated records.
+- [Repository cleanup](cleanup.md): code structure, readability, maintainability, and documentation.
+- [Product clarity cleanup](ui-ux-cleanup.md): concise interface text, useful layouts, and clear actions.
+- [Error handling](abend.md): failure diagnosis, recovery, and operational clarity.
+- [Security](security.md): repository security review and supported fixes.
+- [Sources of truth](ssot.md): shared ownership and removal of duplicated policy.
+- [CI readiness](ci.md): repository checks and continuous-integration readiness.
 
-For UI work produced using these prompts, read the shared [UI Templates requirements](../ui-templates/DESIGN_REQUIREMENTS.md) and [gallery](../ui-templates/index.html). Source folder: `/Users/michaelfuscoletti/Desktop/ui-templates`, Glass UI Starter 02 (September 23, 2026). Use its compact working examples, ordinary wording, and details on demand alongside cool glass surfaces, blue actions, readable contrast, and project-local runtime assets. Link the adopted design requirements from the target project's README for future contributors. Preserve its domain behavior and distinguish verification from owner acceptance.
+These are Markdown instructions, with no application build or runtime. Review changes for consistency and run `git diff --check`.
+
+For UI work, use the target repository’s local design requirements and runtime styles. The original shared Desktop UI Templates gallery is unavailable in this workspace; do not make it a setup or runtime prerequisite. Preserve domain behavior and distinguish technical verification from owner acceptance.
