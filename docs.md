@@ -1,172 +1,44 @@
-Documentation and Repository Accuracy Implementation Prompt
+# Documentation and Repository Cleanup Implementation Prompt
 
-You are the engineer assigned to create the project documentation from the current source code and make small repo fixes discovered while validating it.
+Update the project documentation to explain the current software clearly, and clean up repository clutter discovered along the way. Make the changes directly, including small fixes to broken setup instructions, scripts, examples, and configuration.
 
-Build on the existing documentation and maintenance decisions. Reconcile stale claims instead of recreating a completed documentation pass. The docs should teach a new engineer what the system does, how to run it, how to test it, how it is configured, and where important behavior lives. Implement small fixes when validation shows the repo and the intended workflow are out of sync.
+## Working approach
 
-## Scope and working approach
+- Read the README, applicable repository instructions, relevant source and configuration, and Git status. Build on useful existing docs.
+- Use judgment about how much to inspect. Focus on what readers need to understand, run, test, and maintain the project.
+- Make routine cleanup decisions without asking for confirmation. Leave unrelated code changes alone and flag larger product or architecture decisions briefly.
+- Local notes and development artifacts do not need special archival treatment. Clean them up as part of this pass when useful; the maintainer generally handles their ongoing local organization.
 
-- Follow the user's requested scope. These are implementation prompts: make routine, supported code and documentation fixes directly. Use audit-only mode only when the user asks for a review without changes.
-- Before editing, read the current README, relevant tracker (including a linked Desktop tracker), candidate identity, Git status, and applicable maintenance decisions. Check supported modes and existing work so the pass builds on the current project.
-- Preserve unrelated changes, evidence, editable masters, owner data, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without authorization. If a review candidate must remain fixed, work separately and identify the resulting source changes.
-- Existing authorization carries forward. This prompt alone does not authorize live collection, provider spending, owner-data access or migration, signed builds, or external operations.
-- Do not ask permission for routine fixes or create an exhaustive change ledger. Summarize routine work briefly; explain complicated changes, their reason, effect, and remaining uncertainty. When a change requires an unresolved product or architecture decision, report a concrete follow-up and continue independent work.
+## Documentation
 
-## Objective
+- Keep the README concise: purpose, main capabilities, requirements, quickstart, basic testing, and links to useful supporting docs.
+- Add or update supporting docs only when the project needs them. Consolidate duplicates and delete obsolete or unnecessary documentation.
+- Describe what the software does today using the source, configuration, and existing commands. Correct stale claims and mention meaningful limitations plainly.
+- Use portable paths and repository-owned instructions. Remove personal Desktop paths, private tracker references, internal prompts, and unrelated workspace routines.
+- Remove task, slice, phase, milestone, and handoff narration from lasting docs and source comments. Rewrite useful explanations around current behavior and design rationale. Keep meaningful domain terms and real API or schema versions.
+- Keep useful comments that explain behavior or a non-obvious decision. Remove stale TODOs, coding diaries, and redundant narration.
+- Do not create evidence inventories, candidate identity records, acceptance ledgers, or historical archives for this cleanup. Ordinary documentation accuracy does not require proving every sentence through a separate validation exercise.
 
-Leave the repository in a state where:
-- A new engineer can understand what the system does.
-- Setup and test instructions work.
-- Docs describe implemented behavior.
-- README, core docs, and source comments make sense without knowing the project's internal tasks, slices, phases, or implementation history.
-- Examples, paths, and commands are verified.
-- Small repo defects discovered while validating docs are corrected.
-- The test/build surface still passes.
+## Keep GitHub focused on the project
 
-## Scope
+- Keep source, required configuration, dependency manifests and lockfiles, useful tests and fixtures, licenses, and documentation that helps someone use or contribute to the project.
+- Remove unnecessary tracked coding notes, task lists, plans, agent handoffs, internal review records, screenshots, logs, compiled outputs, generated reports, and temporary or collected data. Do not relocate these into a public planning or history folder merely to retain them.
+- If working material is still useful locally, keep it outside Git tracking and add focused ignore rules. Untrack already tracked local artifacts when appropriate; adding an ignore rule alone is insufficient.
+- Delete clearly obsolete or disposable local clutter when appropriate. No comprehensive preservation process or cleanup ledger is needed.
+- Check how files are used before removing them. Retain data, fixtures, or generated files required to run, test, build, or distribute the project. Keep credentials and personal data out of GitHub.
+- Fix documentation links and script references affected by cleanup. Avoid broad ignore patterns that hide necessary project files.
 
-Review the full repository, including:
-- source directories such as `/src`, `/app`, `/services`, `/api`, or equivalents
-- entry points
-- scripts and task runners
-- schedulers, workers, and background jobs
-- data models, schemas, and migrations
-- external integrations
-- environment variables and runtime configuration
-- local development workflow
-- deployment and operational assumptions
-- CI or local validation configuration
-- existing README or docs content, if present
+## Small repository fixes
 
-Build an accurate model of:
-- what the system does today
-- how to run it locally
-- how to test it
-- what is production-relevant
-- what is intentionally unsupported
-- what code paths are unused or experimental and should be removed, renamed, or clearly marked
+Fix straightforward problems encountered during the pass: incorrect paths, broken package commands, invalid examples, missing sample environment settings, references to removed files, and minor defects in the documented workflow. Keep larger refactors and new features out of scope.
 
-## Implementation Requirements
+## Validation
 
-### Documentation creation and updates
-- Keep root-level docs limited to critical information, usually the README and any standard project files.
-- Put supporting detail in `/docs` when the repo uses or should use that structure.
-- Check relevant existing claims against code, config, scripts, or available evidence. Preserve valid ownership and maintenance decisions; do not repeat a whole-repo verification campaign for unrelated text.
-- Reconcile current instructions with linked trackers, including Desktop trackers. Clearly distinguish current checkout status from historical candidate evidence; do not rewrite historical results as current qualification.
-- Merge overlapping explanations into the clearest canonical location.
-- Rewrite inaccurate sections to match current code and configuration.
-- Add docs for important implemented behavior.
-- Keep docs explicit and operational: commands, environment variables, services, data flows, and known limitations.
-- Create docs that directly help engineers run, test, operate, or modify the project.
+- For documentation and artifact cleanup, check edited text, links, paths, ignore rules, and affected file references. Run a diff whitespace check when Git is available.
+- If code or executable configuration changes, run the relevant existing checks or tests. Run a build only when the change warrants it.
+- Keep checks proportional. A docs pass does not require a full CI campaign, live service validation, packaging, or new evidence bundles.
+- Report actual results honestly and mention significant unresolved problems. Do not commit or push unless requested.
 
-### Write for a public repository, not the maintainer’s workspace
+## Final response
 
-This is a primary acceptance requirement, not a tone-only polish. Public docs must stand on their own for someone who has just cloned the repository.
-
-- Keep the subject inside this repository. Mention something outside it only when it is a direct dependency, an integration, or an authoritative reference needed to use or understand the project. State the actual relationship. A tool or template once used by the maintainer is not a project dependency.
-- Remove references to local template galleries, sibling projects, Desktop folders, personal absolute paths, private trackers, internal prompts, agent handoffs, and organization-specific routines that are not part of the supported project. Do not replace them with notices explaining that those private resources are missing or unavailable. Remove the irrelevant context entirely.
-- Verify apparent dependencies against code, configuration, or supported commands. If a private resource is truly required, identify the concrete setup gap and provide a portable, repository-owned replacement when that is a small supported fix. Otherwise state the real requirement or limitation and report the follow-up; do not invent a public substitute or claim setup works.
-- Keep the README centered on purpose, useful capabilities, a concise working quickstart, essential requirements and limitations, and links to relevant project docs. Move necessary contributor detail to an appropriate guide. Do not turn the README into an internal onboarding manual, maintainer diary, owner-review checklist, or agent operating procedure.
-- Document project-specific steps and pitfalls. Cut generic coaching, repetitive cautions, exhaustive validation narration, and handholding that does not help a reader use or contribute to this project. Do not create a guide for every possible topic merely to fill a documentation structure.
-- Retain real security, data-loss, compatibility, and support constraints where readers need them. Express them as concrete project behavior or requirements, without importing private approval rituals or business-process language.
-- Apply this boundary to supporting docs, examples, comments, generated docs, and link labels as well as the README. Moving irrelevant private context into another public file does not resolve it. Preserve existing immutable records where required, but do not make them prerequisites for understanding or using the project.
-
-Examples (verify the actual dependency first):
-- “Use the shared Desktop UI Templates gallery” → remove when the gallery is only a maintainer design reference; document the repo’s actual styling conventions if useful.
-- “The local templates are unavailable; do not make them a prerequisite” → remove the entire aside when the project does not depend on them.
-- “Read the owner’s Desktop tracker before running the app” → replace with the actual repository-local setup steps and current limitations.
-- “Requires PostgreSQL” → retain with the supported version and configuration when the application actually depends on it.
-
-### Keep development history out of lasting documentation
-
-Prepare the documentation for readers of `main`: users, contributors, reviewers, and external tools should learn what exists today without reconstructing how the team built it. Apply this during ordinary documentation cleanup and before a merge; this prompt does not itself authorize merging.
-
-- Inspect the README, core setup/architecture/API/testing/operations docs, docstrings, source comments, examples, and explanatory text in scripts and tests for internal planning language. Look for numbered slices, phases, tasks, ranks, milestones, work packets, and shorthand such as `B2`, `B9`, or `T1/T2`, as well as handoff narratives and stale next-task instructions. Search by context; these terms can also describe legitimate product concepts.
-- Rewrite affected passages around the current feature, responsibility, contract, constraint, or reason. Remove progress narration such as “added in Slice 8,” “Phase 2 complete,” “for Task 4,” and “the next engineer should implement B3.” Do not simply strip the label and leave an unclear sentence.
-- Keep useful technical detail: behavior, assumptions, invariants, design rationale, compatibility requirements, known limitations, and operational instructions. Comments should explain the code and why a decision matters now. Replace completed TODOs; move planning-only follow-ups to the designated tracker while retaining any current limitation where readers need it.
-- Keep working plans, task breakdowns, handoffs, acceptance records, and historical evidence in an existing designated location such as `docs/planning/`, `docs/history/`, or clearly named engineering tracker/record files. A file being under `docs/` does not by itself make it a history file: core docs still need to stand on their own. Prefer the repo's established locations and avoid creating a second tracker or an exhaustive migration ledger.
-- Consolidate scattered planning narrative into that location only when it is still useful and editable. Preserve immutable evidence, historical results, exact candidate identities, and frozen review artifacts unchanged. Fix links when moving editable material; link to retained records where needed instead of copying their chronology into core docs.
-- State current support and release limitations plainly. For example, describe a locally delivered build and its pending owner review without requiring readers to understand “B9/B10.” Keep precise build identifiers and evidence links where they establish which artifact a claim concerns. Removing planning jargon must never turn technical verification into owner acceptance or release approval.
-- Use descriptive headings and link labels in the README and core docs. A reader should be able to complete setup, understand behavior, and find limitations without opening an internal task tracker. Link to engineering history only where useful; do not make it the main product explanation.
-- Do not perform a blind repository-wide replacement. Preserve meaningful domain terms such as a scheduler task, game phase, or array slice, along with real release/schema/API versions, issue references that explain a current constraint, and necessary provenance. Do not rename public APIs, persisted fields, migrations, fixture IDs, evidence paths, or hashed content just to remove planning labels. If these require broader migration work, record that separately; clean up surrounding prose now.
-- Treat user-visible messages or generated documentation containing the same jargon as cleanup candidates too. If changing them affects executable behavior or contracts, use the repository-fix and proportional-validation rules below.
-
-Examples of the intended rewrite (verify the underlying facts first):
-- “Slice 8 matching layer” → “Matches venue markets using authoritative snapshots.”
-- “B2 adds the bounded Mario conversation and custom-plan flow” → “Supports Mario conversations and custom plans within the documented editing limits.”
-- “B1–B9 technically complete; B10 pending” → describe the available functionality, the exact delivered build where relevant, and the outstanding owner review in ordinary language.
-
-### Repository fixes
-When doc validation reveals small repo problems, fix them directly:
-- broken scripts
-- package commands that no longer match the source tree
-- invalid examples
-- missing sample environment keys
-- config references that point at the wrong source
-- incorrect paths
-- references to removed files
-- documented behavior that is intended but trivially broken
-
-When a fix requires broader product or architecture direction, document the gap clearly with a concrete follow-up.
-
-### Accuracy rules
-- Every factual statement in docs should be verifiable from code, config, scripts, or executable behavior.
-- Claims that cannot be verified should become explicit limitations or follow-up items.
-- Separate automatic behavior from manual workflows.
-- Separate production behavior from local development behavior.
-- Call out intentional non-support where it matters.
-- Prefer concrete descriptions over vague intent.
-
-## Suggested Documentation Structure
-
-Use the files the repo actually needs.
-
-Root:
-- `README.md`
-
-Potential `/docs` files:
-- `local-development.md`
-- `testing.md`
-- `deployment.md`
-- `env-and-config.md`
-- `architecture.md`
-- `data-models.md`
-- `integrations.md`
-- `scheduler-and-jobs.md`
-- `known-limitations.md`
-- `operations.md`
-
-Each doc should have a clear job for the engineer who will use it.
-Keep internal plans and history in a clearly designated subsection or files, separate from these current-behavior references.
-
-## Validation Requirements
-
-Keep validation lightweight and proportional to the change:
-- Inspect the simplest relevant CI or project commands. For code changes, run the affected component's basic compile/build or type/syntax check and relevant unit tests. Use existing commands and environments; install dependencies only if needed.
-- For documentation-only changes, check the edited text, links, referenced paths and commands against the repository. No application build or test suite is required unless executable behavior changed.
-- Repeat a targeted search of current-facing docs, comments, and explanatory text for planning labels and progress narratives. Review remaining matches in context, confirm they are meaningful domain/version/provenance references or belong in designated planning/history records, and check that rewritten passages preserve the actual behavior and limitations. Do not require zero keyword matches across the repo.
-- Do not automatically run the full CI matrix, integration or end-to-end suites, browser walkthroughs, live smoke tests, security campaigns, packaging or signing. Add a focused check only when a changed behavior or observed failure makes it necessary.
-- Inspect command side effects before execution. Use disposable synthetic state when tests write data; do not touch owner state or trigger external operations through a validation command without existing authorization.
-- Use available baseline results; if a check fails, distinguish an existing failure from a regression. Fix regressions from this pass. Once the basic checks pass, stop unless new evidence justifies more testing.
-- Report the checks actually run and their results, with material untested limits. Do not claim unrun checks passed or equate technical checks with owner acceptance, artifact qualification, or release approval.
-
-## Acceptance Criteria
-
-- README accurately explains what the repo is, how to run it, how to test it, and where deeper docs live.
-- Supporting docs are current, consolidated, and useful.
-- README, core docs, and source comments describe the product and code directly, without scattered task/slice/phase chronology or unexplained internal milestone labels.
-- Useful planning history remains in designated records; evidence, technical rationale, exact artifact identity, and current limitations are preserved.
-- Broken references are fixed.
-- Small repo issues found during doc validation are implemented.
-- Relevant tests/checks pass.
-- Remaining gaps are clearly identified as follow-up work.
-
-## Final Response
-
-Include:
-- Docs added, updated, consolidated, or removed.
-- Briefly state where planning/history is retained and any material exceptions still requiring follow-up; do not reproduce the task-by-task history in the summary.
-- Implementation fixes made while validating docs.
-- Commands/checks run and results.
-- Behavior documented as an explicit limitation because it could not be verified.
-- Follow-up items that require a broader engineering or product decision.
+Briefly summarize the documentation changes, repository cleanup, small fixes, checks run, and any important remaining issue. Keep the summary practical and short.
