@@ -37,11 +37,34 @@ The finished repo should be easier to understand, easier to run, and safer for t
 - Normalize formatting, imports, and organization according to existing project standards.
 
 ### File size and structure
-- Prioritize mixed responsibilities, difficult changes, duplicated policy, missing behavioral coverage, and compressed multi-statement code.
-- Use roughly 500 lines as a discovery hint, not a target or size limit. Small files can still be hard to maintain.
-- Split or extract when it clearly improves readability or testability.
-- Keep cohesive modules together when extraction would make the code harder to follow.
-- Reuse existing large-file retention decisions when still applicable. Report only newly relevant structural issues or complicated extractions; do not inventory every large file.
+
+Use the actual language, framework and file responsibility to judge size. Read existing lint settings and documented structural decisions first. Keep stricter applicable project limits; do not raise them to fit current files. Where no relevant policy exists, use these maintenance defaults. These are cleanup thresholds, not claims of universal industry standards or ideal target sizes.
+
+| Authored file type / role | Review above | Split or justify retention above | Useful extraction boundary |
+| --- | ---: | ---: | --- |
+| UI components: `.tsx`, `.jsx`, `.vue`, `.svelte`, Angular component `.ts` | 250 lines | 500 lines | Independent component, stateful behavior, data access or domain logic |
+| JavaScript / TypeScript modules: `.js`, `.mjs`, `.cjs`, `.ts`, `.mts`, `.cts` | 300 | 600 | Feature, service, validation, transformation or transport |
+| Python: `.py`, `.pyw` | 500 | 1,000 | Domain module, storage, provider adapter, orchestration or CLI |
+| Swift: `.swift` | 400 | 1,000 | View, model, service or cohesive type responsibility |
+| C#, Java, Kotlin: `.cs`, `.java`, `.kt`, `.kts` | 400 | 800 | Primary type or distinct responsibility within a large type |
+| Go, Rust, C / C++: `.go`, `.rs`, `.c`, `.h`, `.cc`, `.cpp`, `.hpp` | 400 | 800 | Cohesive package module, subsystem or implementation responsibility |
+| Godot scripts: `.gd` | 300 | 600 | Scene controller, gameplay system, UI or resource logic |
+| Shell: `.sh`, `.bash`, `.zsh`, extensionless shell launchers | 100 | 200 | Thin entry point plus reusable operations; review whether complex logic belongs in an existing structured-language module |
+| PowerShell: `.ps1`, `.psm1` | 200 | 400 | Command, reusable function group or module |
+| Styles: `.css`, `.scss`, `.sass`, `.less` | 300 | 600 | Tokens, shared primitives, component or page styles |
+| Markup / templates: `.html`, `.htm`, `.jinja`, `.jinja2`, `.j2`, `.hbs`, `.ejs` | 250 | 500 | Reusable partial, page section or layout; separate substantial script/style logic |
+| Authored SQL logic: `.sql` | 300 | 600 | Distinct query, procedure or independently deployable operation |
+
+Classify by role before extension: a UI component in `.ts` uses the component row; a Python file embedding a whole web UI needs review of its HTML, CSS and JavaScript responsibilities as well. Use shebangs or build configuration for extensionless files. For unlisted stacks, choose and briefly explain comparable thresholds using project conventions and current official tooling; do not silently apply a blanket 500-line rule.
+
+The reference points differ: [ESLint `max-lines`](https://eslint.org/docs/latest/rules/max-lines) defaults to 300 when the rule is enabled; [Pylint `max-module-lines`](https://pylint.pycqa.org/en/stable/user_guide/configuration/all-options.html) defaults to 1,000; [SwiftLint `file_length`](https://realm.github.io/SwiftLint/file_length.html) defaults to warning at 400 and error at 1,000. [Google's shell guide](https://google.github.io/styleguide/shellguide.html#when-to-use-shell) recommends reconsidering the language beyond 100 lines or with complicated control flow. These references inform the table; the remaining numbers and earlier review triggers are explicit maintenance choices. They do not authorize a language migration. [Angular's guide](https://angular.dev/style-guide#one-concept-per-file) also favors one concept per file, with small related declarations allowed together.
+
+- **At the review threshold:** inspect cohesion, dependency direction, oversized functions/types, nesting, duplicated policy and difficulty testing or changing the file. Split mixed responsibilities now; being below a threshold is not a reason to retain them.
+- **At the upper threshold:** perform a coherent extraction within scope, or retain the file only with a concrete explanation of its single responsibility and why extraction would worsen maintainability or violate a real constraint. “Existing,” “working,” and “scripting language” are not sufficient reasons. An unresolved architecture decision becomes a bounded follow-up, not a misleading cleanup-complete claim.
+- Split by responsibility, not equal-sized chunks. Use meaningful module names and explicit interfaces; avoid `part1`/`part2`, catch-all utilities, import cycles, hidden shared state and chains of tiny forwarding files. Preserve public imports, entry points, resource paths and side effects; check the affected behavior after extraction.
+- Count physical lines under the existing readable formatting, including comments and blanks, unless the configured tool explicitly uses another metric; state that difference when relevant. Do not compress code, delete useful comments or change formatting to pass a count. Inspect dense one-line templates, embedded languages and long functions even when their file count is small.
+- Test source uses its language/role thresholds; split by tested feature or behavior while keeping fixtures and shared setup usable. Generated code, vendored files, lockfiles, snapshots, bulk data and generated fixtures are excluded from mechanical splitting. Review their authored generators or surrounding logic instead. Do not rewrite applied migrations or split configs, schemas or notebooks that a consumer requires as one artifact; review their authored logic and supported composition mechanisms.
+- Reuse prior retention decisions only while their responsibility, constraints and size assumptions still apply. Renew the review after material growth or added responsibilities. Keep explanations in existing maintenance notes or the short handoff; do not create an inventory of every large file or install a new linter merely to enforce this prompt.
 
 ### Consistency and standards
 - Align folder names, file names, module names, and helper patterns with the rest of the repo.
@@ -94,7 +117,7 @@ Keep validation lightweight and proportional to the change:
 - Unused code, inaccurate comments, and obvious leftovers are removed.
 - Ignore rules cover generated output; unnecessary tracked artifacts are untracked with local copies preserved, while required inputs remain available in a fresh checkout.
 - Large unused blocks and abandoned experiments are removed.
-- Structural changes improve maintainability rather than merely reducing line counts.
+- Structural changes improve maintainability rather than merely reducing line counts. Reviewed cleanup targets use the applicable stack/role thresholds; files above the upper threshold are coherently split or have a supported retention decision or explicit unresolved follow-up.
 - Edited code follows existing formatting conventions; relevant basic checks pass or failures are explained.
 - Intended behavior is preserved within the scope covered by the basic checks.
 
