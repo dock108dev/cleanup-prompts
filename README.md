@@ -8,7 +8,7 @@ Reusable prompts for implementing focused repository maintenance. Choose a promp
 - [Error handling](abend.md): failure diagnosis, recovery, and operational clarity.
 - [Security](security.md): repository security review and supported fixes.
 - [Sources of truth](ssot.md): shared ownership and removal of duplicated policy.
-- [CI readiness](ci.md): repository checks and continuous-integration readiness.
+- [CI readiness](ci.md): event-driven workflows, comprehensive project checks, security and reliability, run summaries, quality metrics, and suitable free integrations.
 
 These are Markdown instructions, with no application build or runtime. Review changes for consistency and run `git diff --check`.
 
