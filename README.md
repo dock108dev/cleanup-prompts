@@ -4,7 +4,7 @@ Reusable prompts for implementing focused repository maintenance. Choose a promp
 
 - [Documentation cleanup](docs.md): accurate current-behavior docs and comments, with planning history kept in designated records.
 - [Repository cleanup](cleanup.md): code structure, readability, documentation, current Git ignore rules, and removal of unnecessary tracked artifacts while preserving local copies.
-- [Product clarity cleanup](ui-ux-cleanup.md): concise interface text, useful layouts, and clear actions.
+- [Product UI and UX review](ui-ux-cleanup.md): professional visual design, approachable interactions, task-first layouts, concise text, and deliberate spacing.
 - [Error handling](abend.md): failure diagnosis, recovery, and operational clarity.
 - [Security](security.md): repository security review and supported fixes.
 - [Sources of truth](ssot.md): shared ownership and removal of duplicated policy.
@@ -12,4 +12,4 @@ Reusable prompts for implementing focused repository maintenance. Choose a promp
 
 These are Markdown instructions, with no application build or runtime. Review changes for consistency and run `git diff --check`.
 
-For UI work, use the target repository’s local design requirements and runtime styles. The original shared Desktop UI Templates gallery is unavailable in this workspace; do not make it a setup or runtime prerequisite. Preserve domain behavior and distinguish technical verification from owner acceptance.
+For UI work, follow the target repository’s current design requirements. When available, consult the shared [UI Templates requirements](../ui-templates/DESIGN_REQUIREMENTS.md) and relevant examples; the gallery is a reference, not a setup or runtime prerequisite. Preserve domain behavior and distinguish technical verification from owner acceptance.
