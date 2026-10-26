@@ -5,7 +5,7 @@ Use three perspectives together: a graphic designer judging composition and visu
 Apply these principles throughout the review, implementation and verification:
 
 - “Cut taglines, helper text and secondary labels. If a screen needs them to make sense, fix the layout.” Make purpose, grouping and the next action evident through composition, placement and clear primary labels. Remove copy that compensates for confusing structure; preserve essential field labels, accessible names, actionable errors and decision-critical information.
-- “Make the best decision that will elevate all three: the user experience (UX), developer experience (DX), and agent experience (AX) always, without breaking anything.” Evaluate every change against all three: clear tasks for users, coherent and maintainable implementation for developers, and semantic controls, observable states and reliable verification for agents. Improve them together within scope; do not accept a visual improvement that makes maintenance or reliable interaction worse. Verify preserved behavior rather than assuming a presentation change cannot break it.
+- Make the interface easier to understand and use. Reuse established components and patterns where they fit. Preserve semantic controls, accessible names and observable states so people and agents can interact reliably. Keep changes within scope, preserve existing behavior and verify the affected interactions.
 
 ## Review the current product
 
@@ -15,7 +15,7 @@ Choose two or three representative screens or states covering the main journey. 
 
 For each screen, identify the user's task and the main result or control. Find the largest obstacles to clarity and finish. Establish a brief visual direction appropriate to the product and current requirements: type hierarchy, layout, spacing, surfaces, color and control styles. Give a short scope update and proceed with routine decisions.
 
-Identify where taglines, helper text or secondary labels are doing the layout's job. Plan the structural correction before deleting that copy. Inspect the affected shared components and semantic controls so the improvement supports users, developers and agents across every screen that uses them.
+Identify where taglines, helper text or secondary labels are doing the layout's job. Plan the structural correction before deleting that copy. Identify which screens use the affected shared components so changes can be checked across those screens.
 
 ## Make it look deliberately designed
 
@@ -65,8 +65,8 @@ Compare matched before/after states, data and supported window sizes. Include a 
 
 Review the result through all three perspectives. Does the composition look finished and consistent? Are controls predictable and feedback clear? Can a new user complete the main task without a narrated walkthrough? Record a few concrete before/after observations about useful content, routine steps, reading and spacing. Fix remaining awkward gaps, competing emphasis and inconsistent controls. Measurements support judgment; word counts alone do not prove usability.
 
-Check both guiding principles explicitly. Does each affected screen remain understandable after removing unnecessary taglines, helper text and secondary labels, because the layout now carries that meaning? Does the change improve UX, DX and AX together, with maintainable shared patterns, semantic controls and verifiable states? Check existing actions, state preservation, accessibility and recovery for regressions. Fix regressions and report any unverified behavior; do not claim “without breaking anything” from appearance alone.
+Check that each affected screen remains understandable after removing unnecessary taglines, helper text and secondary labels, because the layout now carries that meaning. Verify that affected controls retain semantic roles, accessible names and observable states. Check existing actions, state preservation, accessibility and recovery for regressions. Fix regressions and report any unverified behavior.
 
 Run existing checks appropriate to the affected behavior. Do not expand a presentation pass into a release campaign. Update existing design notes briefly if needed.
 
-Return a short handoff: two or three concrete improvements to appearance and use, how the changes support UX, DX and AX, matched screenshots or review links, checks and limits, and at most three consequential issues outside scope if found. State source-only conclusions as provisional. Do not call the UI polished without inspecting it rendered. Engineering checks do not establish new-user testing, owner acceptance or commercial readiness.
+Return a short handoff: two or three concrete improvements to appearance and use, matched screenshots or review links, checks and limits, and at most three consequential issues outside scope if found. State source-only conclusions as provisional. Do not call the UI polished without inspecting it rendered. Engineering checks do not establish new-user testing, owner acceptance or commercial readiness.
