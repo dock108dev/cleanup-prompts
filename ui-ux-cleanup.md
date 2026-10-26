@@ -2,6 +2,11 @@ Review and improve this product's interface to a professional standard: visually
 
 Use three perspectives together: a graphic designer judging composition and visual character, an interface designer judging controls and behavior, and a new user trying to complete a task. Implement a coherent improvement across appearance, interaction and content. Less reading and scrolling matter, but compactness alone is not success.
 
+Apply these principles throughout the review, implementation and verification:
+
+- “Cut taglines, helper text and secondary labels. If a screen needs them to make sense, fix the layout.” Make purpose, grouping and the next action evident through composition, placement and clear primary labels. Remove copy that compensates for confusing structure; preserve essential field labels, accessible names, actionable errors and decision-critical information.
+- “Make the best decision that will elevate all three: the user experience (UX), developer experience (DX), and agent experience (AX) always, without breaking anything.” Evaluate every change against all three: clear tasks for users, coherent and maintainable implementation for developers, and semantic controls, observable states and reliable verification for agents. Improve them together within scope; do not accept a visual improvement that makes maintenance or reliable interaction worse. Verify preserved behavior rather than assuming a presentation change cannot break it.
+
 ## Review the current product
 
 Read repository instructions, the active handoff/tracker, local design guidance and working-tree status. Identify the current app and distinguish source, installed builds and historical screenshots. Preserve existing work, private state and frozen builds.
@@ -9,6 +14,8 @@ Read repository instructions, the active handoff/tracker, local design guidance 
 Choose two or three representative screens or states covering the main journey. Inspect their rendered interface and source, including generated messages. Use an isolated synthetic preview where supported; do not launch live acquisition or access owner data merely to review layout. If rendering is unavailable, make source-supported improvements and report visual verification as incomplete.
 
 For each screen, identify the user's task and the main result or control. Find the largest obstacles to clarity and finish. Establish a brief visual direction appropriate to the product and current requirements: type hierarchy, layout, spacing, surfaces, color and control styles. Give a short scope update and proceed with routine decisions.
+
+Identify where taglines, helper text or secondary labels are doing the layout's job. Plan the structural correction before deleting that copy. Inspect the affected shared components and semantic controls so the improvement supports users, developers and agents across every screen that uses them.
 
 ## Make it look deliberately designed
 
@@ -28,7 +35,7 @@ Keep controls with their targets. Make selection and editing evident. Explain a 
 
 - Start with the working content: prices, collection, conversation, scene or remote controls. Use a compact heading and task controls. Remove promotional headlines, category eyebrows, introductory paragraphs and repeated titles when the screen already explains itself.
 - Give the main action clear emphasis. Keep common controls beside the item they affect. Consolidate duplicate controls and remove unnecessary selection steps when existing behavior supports direct action. Secondary actions should look secondary. Keep Stop, Take control and essential recovery directly reachable.
-- Make every visible sentence earn its place. Keep text that identifies content, changes a decision, explains a current blocker or states a consequence. Delete explanations of obvious controls. Put occasional help beside the relevant field or in one clearly named help surface.
+- Cut taglines, helper text and secondary labels by default. Fix hierarchy, grouping, control placement and primary labels wherever explanatory copy is needed to make the screen understandable. Keep text that identifies essential content, changes a decision, explains a current blocker or states a consequence. Delete explanations of obvious controls. Retain occasional help only for information the layout cannot convey, beside the relevant field or in one clearly named help surface; do not relocate redundant prose into tooltips or dialogs.
 - Show the current state, not a catalogue of possible states. Avoid stacks such as “No plan,” “No pending change,” “No attempt” and “Not verified.” Use a coherent idle state; show progress, pending changes and results when relevant. Never suppress actionable errors or material uncertainty.
 - Review dynamic copy too: model replies, status builders, validation and success messages. Present the useful answer, current activity or required action first. Put extended rationale and diagnostics in optional detail. Preserve complete records where required; do not blindly truncate meaningful content.
 
@@ -48,6 +55,8 @@ Follow current local requirements. Preserve useful visual identity while replaci
 
 Do not reduce clutter through tiny type, cramped targets, clipped text, unexplained icons, color alone or hover-only essentials. Preserve accessible names, keyboard order, visible focus and readable contrast.
 
+Use existing shared components and design tokens where appropriate, and keep changes easy to understand and maintain. Preserve semantic roles, stable accessible names, explicit selection and disabled states, and observable action results so people and agents can operate and verify the interface reliably. Do not add hidden behavior, duplicate state or screen-specific workarounds to achieve a cleaner appearance. Agent usability should come from a well-structured interface, without adding technical prose to user flows.
+
 Visual styling, layout, copy, local regrouping and simplifying access to existing controls are in scope. Make routine design decisions autonomously. Preserve calculations, eligibility, permissions, persistence, source identity, gameplay and required approvals. New capabilities, changed domain behavior, migrations, broad refactoring and publication require separate scope. Carry forward existing authorization; do not replace installed/frozen builds without it.
 
 ## Check the actual improvement
@@ -56,6 +65,8 @@ Compare matched before/after states, data and supported window sizes. Include a 
 
 Review the result through all three perspectives. Does the composition look finished and consistent? Are controls predictable and feedback clear? Can a new user complete the main task without a narrated walkthrough? Record a few concrete before/after observations about useful content, routine steps, reading and spacing. Fix remaining awkward gaps, competing emphasis and inconsistent controls. Measurements support judgment; word counts alone do not prove usability.
 
+Check both guiding principles explicitly. Does each affected screen remain understandable after removing unnecessary taglines, helper text and secondary labels, because the layout now carries that meaning? Does the change improve UX, DX and AX together, with maintainable shared patterns, semantic controls and verifiable states? Check existing actions, state preservation, accessibility and recovery for regressions. Fix regressions and report any unverified behavior; do not claim “without breaking anything” from appearance alone.
+
 Run existing checks appropriate to the affected behavior. Do not expand a presentation pass into a release campaign. Update existing design notes briefly if needed.
 
-Return a short handoff: two or three concrete improvements to appearance and use, matched screenshots or review links, checks and limits, and at most three consequential issues outside scope if found. State source-only conclusions as provisional. Do not call the UI polished without inspecting it rendered. Engineering checks do not establish new-user testing, owner acceptance or commercial readiness.
+Return a short handoff: two or three concrete improvements to appearance and use, how the changes support UX, DX and AX, matched screenshots or review links, checks and limits, and at most three consequential issues outside scope if found. State source-only conclusions as provisional. Do not call the UI polished without inspecting it rendered. Engineering checks do not establish new-user testing, owner acceptance or commercial readiness.
