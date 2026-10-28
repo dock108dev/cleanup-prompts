@@ -5,6 +5,7 @@ Reusable prompts for implementing focused repository maintenance. Choose a promp
 - [Documentation cleanup](docs.md): concise current documentation and comments, small repository fixes, and cleanup of unnecessary tracked working material.
 - [Repository cleanup](cleanup.md): code structure, stack-specific file-size review and extraction, documentation, current Git ignore rules, and removal of unnecessary tracked artifacts while preserving local copies.
 - [Product UI and UX review](ui-ux-cleanup.md): professional visual design, approachable interactions, task-first layouts, concise text, and deliberate spacing.
+- [Backend and database review](backend-db-cleanup.md): end-of-sprint maintenance for data integrity, transactions, jobs, migrations, query performance, backend contracts, and operational recovery.
 - [Error handling](abend.md): failure diagnosis, recovery, and operational clarity.
 - [Security](security.md): repository security review and supported fixes.
 - [Sources of truth](ssot.md): shared ownership and removal of duplicated policy.
