@@ -1,4 +1,4 @@
-Clean up the specified Next Steps document in Desktop
+Clean up the specified Next Steps document for this project
 
 Keep this pass scoped to that document and its associated repository documentation.
 

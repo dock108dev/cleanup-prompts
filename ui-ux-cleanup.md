@@ -51,7 +51,7 @@ Keep controls with their targets. Make selection and editing evident. Explain a 
 
 Keep useful names, labels, units, dates and distinctions such as unknown versus zero, saved versus live, requested versus applied and observed versus inferred. Show freshness, material assumptions, costs and consequences where they affect a decision. Explain each shared limitation once; repeat only when needed for an independently viewed item or action.
 
-Follow current local requirements. Preserve useful visual identity while replacing components and patterns that undermine clarity or finish. If available, consult shared `ui-templates/DESIGN_REQUIREMENTS.md` and relevant examples; copy useful patterns, not gallery navigation or sample prose. Templates are references, not required runtime dependencies or proof of app quality.
+Follow current local requirements. Preserve useful visual identity while replacing components and patterns that undermine clarity or finish. If available, consult the project’s shared design requirements and relevant examples; copy useful patterns, not gallery navigation or sample prose. Templates are references, not required runtime dependencies or proof of app quality.
 
 Do not reduce clutter through tiny type, cramped targets, clipped text, unexplained icons, color alone or hover-only essentials. Preserve accessible names, keyboard order, visible focus and readable contrast.
 
