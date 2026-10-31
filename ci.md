@@ -4,7 +4,7 @@ Implement workflow, supporting-script, test/reporting configuration, and documen
 
 ## Scope and working approach
 
-- Read applicable repository instructions, README, active tracker (including a linked Desktop tracker), current candidate identity, maintenance decisions, and Git status before editing. Build on existing work and reconcile stale guidance.
+- Read applicable repository instructions, README, active tracker, current candidate identity, maintenance decisions, and Git status before editing. Build on existing work and reconcile stale guidance.
 - Preserve unrelated changes, credentials, owner data, evidence, editable masters, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without existing authorization. Work separately when a review candidate must remain fixed.
 - Make routine supported fixes directly. Use audit-only mode only when requested. This prompt authorizes repository-side CI and reporting changes, including suitable open-source tools. New external accounts, installation into an account, uploads of private code/reports to a new service, repository setting changes, and paid plans require existing authorization.
 - Use disposable synthetic state for data-writing tests. Live collection, provider spending, owner-data access/migration, signing, and production operations require existing authorization.
