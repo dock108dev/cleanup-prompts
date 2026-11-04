@@ -20,7 +20,7 @@ Python 3.10+ and Git are sufficient; no third-party packages are required. For a
 
 ## Review
 
-The maintainer reviews scope, correctness, portability, and verification. Pull requests must pass the required validation check and resolve review conversations. Changes are squash-merged. Independent approval is not required while the project has one maintainer; revisit that policy when another maintainer joins.
+The maintainer reviews scope, correctness, portability, and verification. Contributors must use pull requests and pass the required `validate` check. Only the owner account `dock108dev` has a named exception allowing direct pushes to `main` without waiting for validation. Validation still runs on pushes and pull requests. Review validation results and resolve review conversations before merging a pull request. Pull requests are squash-merged. Independent approval is not required while the project has one maintainer.
 
 Be respectful, explain disagreements with evidence, and keep discussion about the work. Harassment, personal attacks, and disclosure of private information are not welcome; maintainers may moderate such contributions.
 
