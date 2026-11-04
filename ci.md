@@ -1,6 +1,6 @@
 Review and improve this repository's GitHub Actions CI as a complete engineering system: meaningful quality gates, event-driven workflows, secure execution, useful reporting, and measured reliability.
 
-Implement workflow, supporting-script, test/reporting configuration, and documentation fixes. Do not stop after syntax checks and a few unit tests. Assess correctness, security, compatibility, reproducibility, performance, and operability against the actual project. Comprehensive means each relevant area has a supported check or a specific reason for omission—not that every check runs on every event.
+Implement workflow, supporting-script, test/reporting configuration, and documentation fixes. Do not substitute syntax checks and a few unit tests for required behavioral evidence. Assess correctness, security, compatibility, reproducibility, performance, and operability against the actual project. Comprehensive means each relevant area has a supported check or a specific reason for omission—not that every check runs on every event or after every local edit. Use the [test-selection policy](testing.md) for local iteration; preserve the required hosted CI contract.
 
 ## Scope and working approach
 
@@ -18,6 +18,8 @@ Inspect languages, frameworks, package managers, lockfiles, supported runtimes/p
 If GitHub access is available, inspect required checks, merge-queue configuration, recent run conclusions, timings, failures, and reruns. Use a bounded sample, preferably up to 30 completed runs from the last 30 days; state sample size/window and separate PR from primary-branch evidence. Without access, continue local work and mark hosted history/settings unverified.
 
 Map supported components and critical behavior to checks. Find missing coverage, omitted components, tests that never execute, false-green paths, and commands relying on leftover local files. Reuse prior evidence only when candidate, configuration, environment, and inputs match.
+
+Discover existing dependency-aware test selection, predictive selection, incremental builds, and result caches for local agents as well as CI. Prefer supported stack tooling; inspect its actual configuration and data validity. If selection needs implementation, use the bounded integration and qualification requirements in [the testing prompt](testing.md). Keep fast local iteration and full required merge/release verification explicit; reducing local repetition must not silently weaken hosted gates.
 
 Maintain a concise check map in the existing CI documentation, or `docs/CI.md` if no suitable location exists:
 
@@ -58,7 +60,7 @@ Assess every category below and implement what applies. Keep inexpensive determi
 - **Performance/size:** representative benchmark, bundle/package size, or memory measurements where meaningful and repeatable. Compare like environments/inputs; begin unbaselined or noisy measurements as advisory and justify blocking budgets. Lab metrics do not prove production performance.
 - **Compatibility:** supported runtimes, OSes, architectures, and relevant dependency/service versions. Choose representative PR coverage and broader scheduled coverage deliberately. Explain exclusions instead of adding obsolete combinations to fill a matrix.
 
-Coverage and test counts support behavioral review; they do not replace it. Add tests for important missing behavior or real regressions, not tests that mirror implementation or inflate percentages.
+Coverage and test counts support behavioral review; they do not replace it. Apply the [test value audit](testing.md) to in-scope tests: inspect setup and assertions, map cases to meaningful behavior and plausible defects, assess mock boundaries and redundancy, and identify missing important scenarios. State any sampling or unreviewed areas. Add tests for important missing behavior or real regressions, not tests that mirror implementation or inflate percentages.
 
 ## 4. Make execution secure and reliable
 
@@ -77,17 +79,30 @@ Deliver persistent reports in Actions, beyond the engineer's final chat response
 
 Each applicable workflow should show:
 
+- A leading **What was tested and why it matters** section, using the format below. Counts and coverage follow this explanation rather than substituting for it.
 - Tested SHA/ref, event, run link, platform/runtime, and relevant tool versions. Distinguish PR head, tested merge commit, and merge-queue candidate.
 - Concise overall result and actual PASS, FAIL, SKIPPED, CANCELLED, or NOT RUN outcomes with skip/missing-data reasons.
 - Passed/failed/skipped test counts and duration, concise failing check/test details, and links to full diagnostics.
 - Measured coverage, meaningful comparable deltas, security finding counts by severity, and useful performance/size metrics where applicable.
 - Main blocker, next useful action, and retained report links. Keep full logs out of the summary.
 
+Use plain-language behavior groups that a project owner can understand at a glance:
+
+| Behavior checked | Actual result | Why it matters | Evidence / limit |
+|---|---|---|---|
+| `<scenario and expected outcome>` | `<PASS / FAIL / SKIPPED / CANCELLED / NOT RUN>` | `<user or operational consequence prevented>` | `<current-run suite/test/report link; mocked or untested boundary>` |
+
+Prefer a handful of concise rows with links to detail. Tie each row to exact current-run test IDs, suites, or check outcomes. A static description of a suite is not proof that its cases ran. If evidence is only at suite level, label and report at that level; do not invent per-case outcomes. Show mixed results and skips explicitly: missing, failed, cancelled, or unrun required cases cannot yield an unqualified PASS. Keep lint/build/security checks distinguishable from behavioral tests. Include **Gaps and limits** immediately below the table for important scenarios not covered, skipped tests and reasons, and simulated or untested environments. Never claim live service operation from mocked/offline tests.
+
+For example, a verified duplicate-import test can say “Importing the same file twice does not duplicate saved records — PASS — protects totals from double counting — disposable database; live provider not exercised.” Use this only as a format example; derive actual scenarios and claims from the target's tests and run evidence. Update descriptions when coverage changes. Implement this section in CI itself, not only in the final chat report.
+
+When selection/caching applies, include **Why these tests ran**: actual change scope, selection mechanism, selected behavior, reused results, intentional exclusions, and any broader fallback. Separate not selected, cached, skipped, and newly executed outcomes. No fresh execution is not a fresh pass; report measured savings only against a comparable baseline. A selected local pass must not be labeled full CI readiness.
+
 Retain machine-readable test results (such as JUnit), supported coverage formats, scan outputs, and applicable build/benchmark reports. Give artifacts unique run/matrix names and explicit reasonable retention. Retain useful failure diagnostics; omit secrets, owner data, unnecessary source archives, and bulky routine recordings. Escape untrusted text and never execute an artifact to render its report.
 
 Where useful, retain a small versioned metrics record with run/candidate identity, timestamps, environment, check outcomes, units, baseline identity, and artifact references. Missing values remain null/unavailable. Missing or malformed required reports are visible failures, not zero findings or a pass.
 
-Provide job/workflow summaries where they help and a consolidated view where it reduces interpretation. Keep independent workflows independent; cross-workflow rollups must identify each run/SHA and cannot treat stale scheduled results as current PR evidence. Verify aggregation using passing, failing, and missing-report synthetic samples.
+Provide job/workflow summaries where they help and a consolidated view where it reduces interpretation. Keep independent workflows independent; cross-workflow rollups must identify each run/SHA and cannot treat stale scheduled results as current PR evidence. Verify aggregation using passing, failing, skipped, cancelled, zero-test, and missing-report synthetic samples as applicable; check that behavioral claims match the evidence and failed commands retain their failure status.
 
 ## 6. Measure quality and CI health
 
@@ -126,7 +141,7 @@ Implement suitable repository-only options within scope. When a service needs au
 ## 8. Validate the implemented contract
 
 - Use an Actions-aware validator such as actionlint and inspect event conditions, expressions, paths, inputs, job dependencies, and check names. YAML parsing alone does not validate Actions semantics.
-- Run locally reproducible equivalents of applicable required PR gates for affected components, including relevant integration/build/security/reporting checks. Do not reduce validation to a basic compile and a few tests when the contract requires more. Check clean-install/export behavior when dependency, package, or generated-input logic changes.
+- During local iteration, run tool-selected affected checks and explicit risk-driven additions. At final CI qualification, run locally reproducible checks required by the target's local acceptance contract, including relevant integration/build/security/reporting checks. Do not interpret the hosted PR gate list as a mandate to rerun full CI after each edit. Reuse still-valid evidence and explain any required full local run. Check clean-install/export behavior when dependency, package, or generated-input logic changes.
 - Inspect side effects first; use disposable synthetic services/state and finite timeouts. Verify a representative local environment and identify remaining hosted/platform matrix entries. Local runner emulation does not prove GitHub behavior.
 - Exercise applicable failure, missing-data, and intentional-skip reporting/gate behavior without touching production. Ensure report generation preserves failures and required missing/skipped checks cannot produce false-green status.
 - Distinguish existing failures from regressions; retain sanitized evidence and repair defects introduced by this pass. Do not repeat unchanged passing suites without a reason. Continue independent checks around concrete blockers.
@@ -161,6 +176,8 @@ Explain the result in one paragraph. LOCALLY READY requires applicable locally r
 Explain skips and distinguish recommended repository settings from applied configuration.
 
 ## Validation performed
+
+Start with the same plain-language behavior/result/importance/evidence summary used in CI, followed by material gaps and limits. Explain what the checks establish before presenting commands or metrics. State test-audit coverage and unresolved weak or low-value cases; do not imply every test was reviewed if the audit was sampled.
 
 | Validation | PASS / FAIL / NOT RUN / N/A | Evidence and candidate |
 |---|---|---|

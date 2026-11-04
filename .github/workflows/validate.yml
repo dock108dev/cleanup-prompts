@@ -24,8 +24,42 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate prompts and packaging
+        id: bundle
         run: python3 scripts/validate.py
       - name: Test validation failures and valid inputs
+        id: tests
         run: python3 -m unittest discover -s tests -v
       - name: Check whitespace in the checked-out commit
+        id: whitespace
         run: git show --format= --check HEAD
+      - name: Explain what was checked
+        if: ${{ always() }}
+        env:
+          BUNDLE_RESULT: ${{ steps.bundle.outcome }}
+          TEST_RESULT: ${{ steps.tests.outcome }}
+          WHITESPACE_RESULT: ${{ steps.whitespace.outcome }}
+        shell: bash
+        run: |
+          outcome() {
+            case "$1" in
+              success) printf 'PASS' ;;
+              failure) printf 'FAIL — see step log' ;;
+              skipped) printf 'SKIPPED — earlier step did not succeed' ;;
+              cancelled) printf 'CANCELLED — no completed result' ;;
+              *) printf 'NOT RUN — no result available' ;;
+            esac
+          }
+          {
+            printf '## What was tested and why it matters\n\n'
+            printf 'Tested commit: `%s` · Event: `%s` · Ubuntu 24.04\n\n' "$GITHUB_SHA" "$GITHUB_EVENT_NAME"
+            printf '| Check | Actual result | Why it matters | Evidence / limit |\n'
+            printf '| --- | --- | --- | --- |\n'
+            printf '| Bundle integrity: prompt files, links, and installation metadata | %s | Keeps the shared prompts usable from another checkout. | Packaging step; static checks, not an agent trial. |\n' "$(outcome "$BUNDLE_RESULT")"
+            printf '| Validator behavior: accepts valid examples and rejects known broken bundles | %s | Catches packaging defects without blocking supported valid inputs. | Suite-level result; individual cases in the test log. Disposable files only. |\n' "$(outcome "$TEST_RESULT")"
+            printf '| Commit whitespace | %s | Catches whitespace errors introduced in the checked-out commit. | Git check; does not test product behavior. |\n' "$(outcome "$WHITESPACE_RESULT")"
+            printf '\n### Gaps and limits\n\n'
+            printf '%s\n' '- These checks do not demonstrate that an agent follows the prompts correctly, that external links are available, or that a target application works.'
+            printf '%s\n' '- Validator tests cover the listed examples, not every possible Markdown or packaging input. The current suite has no intentionally skipped cases.'
+            printf '%s\n' '- A failed step prevents later checks from running; skipped checks provide no passing evidence. Cancellation may prevent this summary from being written.'
+            printf '\n[Full run and step logs](%s/%s/actions/runs/%s)\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+          } >> "$GITHUB_STEP_SUMMARY"

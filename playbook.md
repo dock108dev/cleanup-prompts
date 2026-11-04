@@ -37,6 +37,7 @@ Consider every catalog entry for applicability, but read full instructions only 
 | [Error handling](abend.md) | Failure, retry, timeout, cancellation, logging, fallback, or recovery paths |
 | [Security](security.md) | Trust boundaries, permissions, input handling, secrets, dependency changes, browser/native boundaries, or security review |
 | [Sources of truth](ssot.md) | Duplicated rules/configuration, conflicting ownership, repeated policy, or parallel implementations |
+| [Test value audit and selection](testing.md) | Tests or tested behavior affected by the scope, wasteful local test execution, requested test-quality/tooling review, or a full audit; inspect purpose, assertions, and available selection tools |
 | [CI readiness](ci.md) | Workflows, build/test tooling, dependency/runtime changes affecting gates, or requested CI review |
 | [Next Steps](next_steps.md) | An identified Next Steps document whose status or remaining plan needs reconciliation within the request |
 
@@ -56,7 +57,9 @@ Existing authorization remains valid. The cleanup request alone does not authori
 
 ## Verification and stopping
 
-Use the target's mandatory checks and the selected prompts' applicable verification requirements. Start with focused checks, then broader checks where required or justified by impact. Documentation-only work generally needs links/consistency checks and `git diff --check`, unless the target requires more. Do not weaken gates or repeatedly rerun passing suites without changed inputs or new evidence.
+Use the target's mandatory checks at their required checkpoint and the selected prompts' applicable verification requirements. For local iteration, discover and prefer supported affected-test/incremental commands using the [test-selection policy](testing.md). Include working-tree changes and transitive dependencies; explain selection and any broader fallback. Do not reproduce full CI locally by default, use changed-file counts as a risk threshold, or treat hosted merge gates as an instruction to rerun them after every edit. Honor explicit local requirements; run consolidated final checks once when required. Documentation-only work generally needs links/consistency checks and `git diff --check`, unless the target requires more.
+
+Reuse trustworthy results for matching relevant inputs across prompts and agents; distinguish cached/reused evidence from newly run checks. Expand to the affected subsystem when selection is uncertain, and to the full suite only for a specific risk, explicit requirement, or necessary selector qualification. Do not weaken gates, claim unselected tests passed, or repeatedly rerun passing suites without changed inputs or new evidence. A broad audit requires broad inspection, not automatically the full runtime CI matrix on the local machine.
 
 Distinguish existing failures, regressions introduced here, and failures of unknown origin. Use available baselines or safe isolated comparisons; do not reset the working tree to establish one. Fix regressions from this pass. Inspect the final diff, including newly created files, for unintended changes and incomplete fixes.
 
@@ -71,7 +74,7 @@ Keep the handoff proportional to the work, with:
 - **Scope and status:** target, mode, comparison/range if any, and `complete`, `blocked`, or `unverified`. Complete applies only to the defined cleanup or audit pass, not overall product readiness. An audit can complete with findings when the requested review coverage is complete; unmet required inspection stays blocked/unverified.
 - **Routing:** selected prompts and reasons; concise reasons for skipped prompts. Group skips when the same reason applies.
 - **Result:** concrete changes, or prioritized audit findings with file/evidence references and practical impact. State explicitly when no changes were warranted.
-- **Verification:** commands/checks actually run and results, including failures, skipped required checks, and uncertainty about pre-existing failures.
+- **Verification:** lead with the behaviors actually checked, why they matter, actual outcomes, and important evidence limits; then commands/counts as useful detail. Include failures, skipped required checks, and uncertainty about pre-existing failures. When tests were audited, state the inspected scope and remaining gaps.
 - **Remaining work:** consequential unresolved items, why each remains, and its next action. Keep source changes, local checks, hosted CI, installation/deployment, and owner acceptance separate.
 
 Report in chat unless the user or target instructions require a durable report. Avoid introducing a new tracker or report directory for every run.

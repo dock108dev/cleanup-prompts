@@ -43,6 +43,9 @@ To update a linked installation, review upstream changes and run `git pull --ff-
 | “Run the relevant cleanup prompts” | Clean up staged, unstaged, and relevant untracked changes, plus affected code |
 | “Run cleanup for this branch against BASE” | Review the branch diff and affected behavior, then make supported repairs |
 | “Run cleanup for the backend” | Limit implementation and checks to that subsystem and its affected contracts |
+| “Audit our test cases for value, no edits” | Review each in-scope test's purpose, assertions, and gaps; report what it protects |
+| “Improve our tests and make CI results meaningful” | Repair supported test weaknesses and summarize what ran, why it matters, and what remains unproven |
+| “Make local testing selective instead of rerunning full CI” | Discover stack-supported selection/caching, implement a bounded integration where appropriate, and explain fallback rules |
 | “Run broader cleanup across this repo” | Consider all applicable maintenance areas across the repository |
 | “Run a full audit, no edits” | Review the repository and report findings without changing source or configuration |
 | “Run a full audit and fix the findings” | Review broadly and implement supported in-scope repairs |
@@ -58,6 +61,7 @@ A clean working tree triggers bounded triage by default, not an unsolicited whol
 - [Error handling](abend.md): failure diagnosis, retries, cancellation, and operational clarity.
 - [Security](security.md): trust boundaries, dependencies, secrets, and supported repairs.
 - [Sources of truth](ssot.md): shared ownership and duplicated policy.
+- [Test value audit and efficient execution](testing.md): test purpose, assertion quality, coverage gaps, stack-supported local selection, and avoiding redundant full-suite runs.
 - [CI readiness](ci.md): workflows, checks, security, reproducibility, and reporting.
 - [Next Steps reconciliation](next_steps.md): reconcile an identified planning document with completed and remaining work.
 
@@ -79,7 +83,7 @@ python3 -m unittest discover -s tests -v
 git diff --check
 ```
 
-CI checks local Markdown links, portable paths, skill metadata, text hygiene, and the validator's behavior. It does not evaluate an agent's actual cleanup quality or the availability of external websites.
+CI checks local Markdown links, portable paths, skill metadata, text hygiene, and the validator's behavior. Its Actions summary explains each check's purpose and actual result, with limits stated beside the results. It does not evaluate an agent's actual cleanup quality or the availability of external websites.
 
 Report ordinary bugs through [GitHub issues](https://github.com/dock108dev/cleanup-prompts/issues). Report security issues privately as described in [security policy](.github/SECURITY.md). Repository protection policy is documented in [the maintainer guide](.github/MAINTAINERS.md).
 

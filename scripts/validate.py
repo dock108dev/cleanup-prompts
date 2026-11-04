@@ -11,7 +11,7 @@ REQUIRED = (
     "README.md", "SKILL.md", "LICENSE", "CONTRIBUTING.md",
     ".github/SECURITY.md", "harness.md", "playbook.md",
     "cleanup.md", "docs.md", "ui-ux-cleanup.md", "backend-db-cleanup.md",
-    "abend.md", "security.md", "ssot.md", "ci.md", "next_steps.md",
+    "abend.md", "security.md", "ssot.md", "testing.md", "ci.md", "next_steps.md",
 )
 LINK = re.compile(r"\]\(([^\s)]+)(?:\s+\"[^\"]*\")?\)")
 REFERENCE = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
