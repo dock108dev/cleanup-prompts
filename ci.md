@@ -1,202 +1,156 @@
-Review and improve this repository's GitHub Actions CI as a complete engineering system: meaningful quality gates, event-driven workflows, secure execution, useful reporting, and measured reliability.
+# CI that gives trustworthy answers with less repeated work
 
-Implement workflow, supporting-script, test/reporting configuration, and documentation fixes. Do not substitute syntax checks and a few unit tests for required behavioral evidence. Assess correctness, security, compatibility, reproducibility, performance, and operability against the actual project. Comprehensive means each relevant area has a supported check or a specific reason for omission—not that every check runs on every event or after every local edit. Use the [test-selection policy](testing.md) for local iteration; preserve the required hosted CI contract.
+Improve this repository's GitHub Actions CI so a change gets useful, trustworthy feedback sooner, with measured use of compute. Implement supported workflow, script, reporting, and documentation repairs. Establish the behavior and current contract, measure where work goes, then remove unnecessary work before tuning what remains.
 
-## Scope and working approach
+Follow the [playbook](playbook.md) for scope, audit-only mode, preservation, authorization, and stopping. Use [testing.md](testing.md) for test quality, pruning, local selection, and verification methods. A targeted CI repair is not permission for a repository-wide test campaign. Relevant quality areas need supported checks or explicit omissions; they do not all need to run on every event or after every edit.
 
-- Read applicable repository instructions, README, active tracker, current candidate identity, maintenance decisions, and Git status before editing. Build on existing work and reconcile stale guidance.
-- Preserve unrelated changes, credentials, owner data, evidence, editable masters, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without existing authorization. Work separately when a review candidate must remain fixed.
-- Make routine supported fixes directly. Use audit-only mode only when requested. This prompt authorizes repository-side CI and reporting changes, including suitable open-source tools. New external accounts, installation into an account, uploads of private code/reports to a new service, repository setting changes, and paid plans require existing authorization.
-- Use disposable synthetic state for data-writing tests. Live collection, provider spending, owner-data access/migration, signing, and production operations require existing authorization.
-- Continue independent work around credential or product-decision blockers. Prepare concrete reviewable configurations and setup instructions for external activation; keep incomplete integrations disabled and clearly labeled.
-- Fix CI defects and bounded regressions exposed by checks. Separate broad product rewrites and unrelated upgrades into bounded follow-ups. Never weaken checks merely to make a run green.
+## 1. Establish the contract and who requires it
 
-## 1. Discover the actual CI contract
+Read applicable instructions, product requirements, README, active tracker, maintenance decisions, candidate identity, and Git status. Inspect relevant manifests, lockfiles, supported platforms, workflows, reusable workflows, custom actions, called scripts, test discovery, build/package commands, dependency-update and release configuration. Trace actual commands rather than assuming a standard language checklist.
 
-Inspect languages, frameworks, package managers, lockfiles, supported runtimes/platforms, entry points, and actual install/check/test/build/package commands. Read every workflow, reusable workflow, custom action, called script, dependency-update configuration, container/service dependency, release configuration, and relevant contributor doc.
+When GitHub access is available, inspect current required checks, rulesets, merge-queue settings, and relevant run evidence. Otherwise continue repository-side work and mark settings/history unverified. Keep a concise map in existing CI documentation, or `docs/CI.md` when needed:
 
-If GitHub access is available, inspect required checks, merge-queue configuration, recent run conclusions, timings, failures, and reruns. Use a bounded sample, preferably up to 30 completed runs from the last 30 days; state sample size/window and separate PR from primary-branch evidence. Without access, continue local work and mark hosted history/settings unverified.
+| Behavior / risk | Exact workflow, job, command | Event / platform / checkpoint | Required, advisory, scheduled, or N/A | Authority / evidence |
+| --- | --- | --- | --- | --- |
+| `<observable contract>` | `<executable check>` | `<where it governs>` | `<current status>` | `<ruleset, instruction, product requirement, or recommendation; source>` |
 
-Map supported components and critical behavior to checks. Find missing coverage, omitted components, tests that never execute, false-green paths, and commands relying on leftover local files. Reuse prior evidence only when candidate, configuration, environment, and inputs match.
+Distinguish an observed repository merge requirement, an explicit local checkpoint, a product/release requirement, an inherited workflow convention, and an engineering recommendation. A job existing in YAML does not establish that the owner made it a release gate. An active required check still governs current merges even if it looks redundant: preserve it until an authorized change to that contract is made. Explain the impact of any requirement that blocks completion or review.
 
-Discover existing dependency-aware test selection, predictive selection, incremental builds, and result caches for local agents as well as CI. Prefer supported stack tooling; inspect its actual configuration and data validity. If selection needs implementation, use the bounded integration and qualification requirements in [the testing prompt](testing.md). Keep fast local iteration and full required merge/release verification explicit; reducing local repetition must not silently weaken hosted gates.
+This prompt authorizes scoped repository-side CI/tooling/reporting fixes. Existing authorization carries forward; it does not by itself authorize commits, pushes, publishing, releases, account installation, new external uploads, paid services, repository settings, secrets, variables, environments, signing, production operations, or provider spending. Use disposable synthetic state for data-writing checks. Preserve unrelated dirty work, owner data, credentials, retained evidence, editable masters, and frozen candidates. Prepare concrete configurations around external blockers and continue independent engineering.
 
-Maintain a concise check map in the existing CI documentation, or `docs/CI.md` if no suitable location exists:
+## 2. Measure a baseline and choose useful changes
 
-| Area / product risk | Exact workflow / job / command | Event / platform | Required, advisory, scheduled, or N/A | Reason / evidence |
-|---|---|---|---|---|
+Use existing reports and a bounded sample: normally up to 30 recent runs from the last 30 days, with sample size/window stated. Include failed, cancelled, timed-out, and rerun work; separate PR, primary-branch, scheduled, and release workloads. Report incomplete observations explicitly. Do not crawl unlimited history or wait weeks for a baseline before fixing a demonstrated defect.
 
-Derive commands and support claims from the repository. Add maintainable scripts/configuration where a necessary check is missing. Explain material omissions.
+Inspect job and matrix entries, not just workflow duration. For expensive or repeated paths, capture available evidence for:
 
-## 2. Design workflows around events and responsibilities
+- Invocations per event/revision, duplicate triggers, superseded attempts, retries, and review-bot starts.
+- Queue time, elapsed critical path, runner class/platform, summed runner execution minutes, and useful work completed. Parallel job minutes are not wall-clock duration or necessarily billable minutes.
+- Checkout, dependency restore/install, build, service/fixture setup, test execution, and report/upload time. Missing phase timings remain unavailable until measured.
+- Test scope, shard imbalance, worker count, memory/OOM evidence, cache hits and actual restore benefit, and artifact sizes/retention where material.
 
-Use GitHub Actions as an event-driven orchestration platform. There is no requirement to collapse CI into one action, workflow, job, or universal entrypoint. Keep responsibilities readable, parallelize independent work, and express real dependencies with `needs`.
+Rank bounded changes by demonstrated waste, feedback benefit, correctness risk, and effort. Typical opportunities are weak or duplicate tests, repeated event/review work, overbroad selection, setup larger than the selected task, then poor shard packing or runner sizing. Investigate the measured bottleneck rather than installing a fashionable runner, selector, or dashboard.
 
-Assess the following event model and implement the parts appropriate to the repository:
+Compare equivalent inputs and report both feedback time and compute use. A smaller runner may cost less while delaying dependent work; more shards may finish sooner while repeating setup. Account for workload changes. Distinguish actual charges, measured usage, and estimates at dated published prices; sponsored capacity is not a paid bill. Do not promise another project's percentage saving or attribute a mixed before/after trend to one change. A missing baseline permits a first measurement, not an invented delta.
 
-| Event / responsibility | Intended checks |
-|---|---|
-| `pull_request` | Deterministic merge gates: source quality, relevant behavioral suites, builds, security checks, and representative supported platforms. Fork-safe, with useful failure reports. |
-| Push to primary or maintained branches | Validate the merged state, broader integration/build checks where justified, and publish comparable baseline reports. Avoid redundant work that adds no distinct assurance. |
-| `merge_group` | Required gates for an observed merge queue, using stable check names and the queued candidate. |
-| `schedule` | Broader compatibility, dependency/security refresh, deeper tests, benchmarks, and CI-health trend reports. State cadence, UTC timing, default-branch behavior, and freshness limits; schedules are not exact-time guarantees. |
-| `workflow_dispatch` | Bounded diagnostics or deeper validation with typed, validated inputs and safe defaults; document what can be requested and any permissions required. |
-| Tags/releases/environments | Separate packaging, provenance, signing, deployment, and publishing workflows under existing release authorization and environment controls. Ordinary PR CI must not publish. |
+Implement changes in reviewable slices, using current evidence to decide the next slice. Stop when the requested scope is complete; do not turn the baseline into a new observability platform.
 
-Use reusable workflows (`workflow_call`) for shared multi-job policy, typed inputs, explicit outputs, and narrowly passed secrets. Use composite actions for genuinely repeated step sequences. Do not create abstraction for a one-off command or duplicate policy across workflows. Prefer native job dependencies and artifact handoff over unnecessary chains of `workflow_run`; assess privilege escalation explicitly when cross-workflow triggering is necessary.
+## 3. Decide what must run before expensive fanout
 
-Keep distinct workflows discoverable and independently diagnosable. Use stable names, purposeful concurrency groups, realistic timeouts, and trigger/path filters that cannot strand required checks. Include workflow/configuration and shared-library changes in affected-component selection. Document which workflows are merge gates, scheduled assurance, advisory reporting, and release operations. A summary can aggregate results without dictating one execution pipeline.
+Reuse the stack's supported task graph, affected-test command, and existing CI classification. A small repository may need only straightforward job conditions. Add a shared planning step only when it removes meaningful repetition or makes selection safer; do not build a custom scheduler by default.
 
-## 3. Implement meaningful project checks
+For a selector or planner, establish these contracts:
 
-Assess every category below and implement what applies. Keep inexpensive deterministic gates on PRs; place expensive checks on the appropriate branch, schedule, or manual path without deferring critical merge assurance.
+1. **Exact inputs.** Identify base, head, tested merge/queue candidate, event, policy version, and complete changed paths, including additions, deletions and renames. Account for API pagination/truncation, missing history and merge-base failures. Local commands also include staged, unstaged, and relevant untracked inputs under [testing.md](testing.md).
+2. **Explainable ownership.** Include changed/new tests, affected owners and transitive consumers, shared fixtures/helpers, configuration, schemas, generated inputs, lockfiles and non-code dependencies. Missing static imports do not establish independence. Workflow, selector and policy changes receive their own coverage and the scope they can affect.
+3. **Retained obligations.** Add applicable mandatory checks and critical smoke contracts independently of a narrowed test list. Select each test under its actual runtime/configuration; a filename alone is not an executable plan.
+4. **Explicit outcomes.** Distinguish selected work, supported no-impact/N/A, reused results, and uncertainty. A malformed plan, missing owner, unrecognized input, failed diff, stale graph or unexplained empty selection must broaden visibly to an adequate subsystem/full run or fail planning. It cannot default to an empty green matrix. Configuration changes that invalidate the graph require broader coverage.
+5. **Traceable reasons.** Retain enough candidate identity, inventory, selected commands and reasons to explain a surprising inclusion or omission. Validate plan data as data; never turn contributor-supplied strings into shell commands.
 
-- **Source quality:** formatting in check mode, linting, type checking, compilation, relevant shell/script checks, Actions-aware workflow validation, and generated-file drift. Validate useful executable examples and local documentation references.
-- **Behavior:** applicable unit suites and integration/component tests for important boundaries such as persistence, API contracts, authorization, error recovery, and cleanup. Detect unintended zero-test collection, accidental suite exclusions, and missing expected reports.
-- **User journeys:** deterministic smoke/end-to-end checks for main supported workflows where available. Assess keyboard/accessibility and representative UI states. Use isolated synthetic inputs; distinguish automated checks from device/native evidence and owner acceptance.
-- **Build/distribution:** production builds for supported components, package contents/assets, and fresh-output install/import/start smoke checks where relevant. A clean export or checkout must expose missing tracked inputs. Keep signing/publication separate.
-- **Data/services:** disposable databases and services, bounded health checks, deterministic fixtures, relevant supported migration paths, schema/contract checks, and teardown. Never use owner or production state.
-- **Security/dependencies:** workflow trust boundaries, secret detection, supported vulnerability scanning, useful language-specific static analysis, and relevant container/IaC checks. Review dependency/license inventories where applicable. Use existing blocking policy; justify defaults for new gates. Suppressions must be narrow, explained, and have a review date. Never print secrets or conceal findings.
-- **Performance/size:** representative benchmark, bundle/package size, or memory measurements where meaningful and repeatable. Compare like environments/inputs; begin unbaselined or noisy measurements as advisory and justify blocking budgets. Lab metrics do not prove production performance.
-- **Compatibility:** supported runtimes, OSes, architectures, and relevant dependency/service versions. Choose representative PR coverage and broader scheduled coverage deliberately. Explain exclusions instead of adding obsolete combinations to fill a matrix.
+Dependency selection, predictive ranking and result caching are different mechanisms. Prefer deterministic supported ownership/dependency selection for omission decisions. A prediction's confidence is not dependency evidence. Qualify new selectors using the bounded cases in [testing.md](testing.md), including relevant historical regressions when available: demonstrate that the needed test is selected and that its behavioral assertion catches the defect. Record misses and repair the rule or widen the fallback.
 
-Coverage and test counts support behavioral review; they do not replace it. Apply the [test value audit](testing.md) to in-scope tests: inspect setup and assertions, map cases to meaningful behavior and plausible defects, assess mock boundaries and redundancy, and identify missing important scenarios. State any sampling or unreviewed areas. Add tests for important missing behavior or real regressions, not tests that mirror implementation or inflate percentages.
+Start unqualified omission policies in shadow mode: freeze the proposed subset before an already-planned broader run, then compare omitted failures without changing that run. State what would permit promotion, who owns that policy, and how to force broader execution. Retain existing required gates during qualification. Do not run the full suite after every selected local run; use representative qualification and existing broader runs to detect misses. Shadow mode records a proposal; it does not establish safe production selection.
 
-## 4. Make execution secure and reliable
+### Keep the required result dependable
 
-- Use deterministic lockfile installation, correct directories, explicit supported runtimes, and pinned tools/containers. Pin external actions to full commit SHAs with version comments and maintainable updates.
-- Set least-privilege permissions per workflow/job. Pass narrowly scoped secrets; avoid blanket inheritance. Treat PR metadata, outputs, reports, artifacts, and contributor-controlled strings as untrusted data. Avoid shell injection and unsafe rendering.
-- Inspect `pull_request_target`, `workflow_run`, fork behavior, privileged checkouts, checkout credential persistence, cache/artifact trust, and self-hosted runner exposure. Untrusted PR code must not receive privileged credentials or unsafe access to persistent runners.
-- Bound startup polling, network calls, retries, and cleanup. Cancel superseded PR runs without cancelling unrelated work or protected release operations. Make job names and concurrency groups appropriate to event/ref responsibility.
-- Key caches by lockfiles, tool/runtime versions, and platform; correctness must not depend on a warm cache. Avoid wasteful matrices, duplicate runs, and unnecessary artifact transfers.
-- Verify path filters, `needs`, conditions, matrix results, and any aggregate required gate. Required failure, cancellation, or unexpected skip must not become success. Explain intentional N/A skips. Never blanket-use `continue-on-error`.
-- Preserve command exit status through report generation and log pipelines. Applicable reporting/uploads/cleanup should run after failure; they must not mask the original failure. Make required report-generation failures visible. Optional telemetry outages must not erase test results or block unrelated correctness checks.
-- Do not change branch protection, rulesets, repository settings, secrets, variables, environments, or external integrations without authorization. Recommend exact setting changes separately from implemented workflow configuration.
+Where fanout is conditional, use a stable required result that evaluates the plan and all expected job outcomes, or an equally explicit existing mechanism. Ensure it is emitted for each required event/candidate. Top-level path filters must not strand a required check in pending state. Conditional jobs reporting success are not proof that required work ran; see [GitHub's required-check guidance](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
 
-## 5. Implement reporting inside CI
+An aggregate that uses `needs` must still inspect failed/skipped dependencies, for example through an appropriate `always()` condition. Its decision must require a valid plan and successful expected work. Only explicitly planned N/A work may be absent. Required failure, cancellation, unexpected skip, zero-test collection, missing shard, malformed/missing required report, or planner failure cannot yield an unqualified pass. A wholly cancelled workflow may produce no final summary; absence is not success.
 
-Deliver persistent reports in Actions, beyond the engineer's final chat response. Prefer native job summaries through `GITHUB_STEP_SUMMARY`, annotations, and downloadable artifacts. Reuse existing test reporters. Avoid a custom reporting framework when small supported tools suffice.
+Do not rename/remove active required statuses or change branch rules as an incidental optimization. Prepare any required settings migration, including the safe transition order, under existing authorization.
 
-Each applicable workflow should show:
+## 4. Put assurance at the right checkpoint
 
-- A leading **What was tested and why it matters** section, using the format below. Counts and coverage follow this explanation rather than substituting for it.
-- Tested SHA/ref, event, run link, platform/runtime, and relevant tool versions. Distinguish PR head, tested merge commit, and merge-queue candidate.
-- Concise overall result and actual PASS, FAIL, SKIPPED, CANCELLED, or NOT RUN outcomes with skip/missing-data reasons.
-- Passed/failed/skipped test counts and duration, concise failing check/test details, and links to full diagnostics.
-- Measured coverage, meaningful comparable deltas, security finding counts by severity, and useful performance/size metrics where applicable.
-- Main blocker, next useful action, and retained report links. Keep full logs out of the summary.
+Keep workflows independently understandable, parallelize independent work, and use `needs` only for real dependencies. There is no requirement for one universal workflow or command.
 
-Use plain-language behavior groups that a project owner can understand at a glance:
+| Event / responsibility | Appropriate work |
+| --- | --- |
+| `pull_request` | Fork-safe deterministic merge assurance for the change: applicable source quality, behavior, security, builds and representative supported platforms. Run cheap useful checks before expensive work where that reduces waste. |
+| Push to maintained/primary branch | Verify the merged state and distinct integration/regression obligations; avoid repeating identical work with no additional assurance. |
+| `merge_group` | Existing merge-queue requirements on the queued candidate, using stable names. |
+| `schedule` | Broader compatibility, full/regression assurance, security-data refresh and measured benchmarks where justified. Record tested revision, cadence, freshness limit and failure owner. UTC schedules are not exact-time guarantees. |
+| `workflow_dispatch` | Bounded diagnostics/full overrides with typed validated inputs and safe defaults. Document side effects and permissions. |
+| Release/tag/environment | Exact-version packaging, provenance, signing, publishing and deployment under existing release authorization; separate from ordinary PR execution. |
+
+Moving a check from PRs to background changes when defects are detected. Preserve active requirements; otherwise explain the risk, responsible repair path, freshness expectation and authorized policy before moving it. Scheduled green evidence for an older revision cannot qualify a newer release. A background failure must remain visible and actionable.
+
+Cancel superseded PR work with event/ref-specific concurrency without cancelling unrelated or protected release work. Consider coalescing noisy updates only when cancellation/setup measurements justify it; do not add arbitrary sleeps that occupy runners. Retain distinct automatic reviews where policy requires them. Avoid repeating a full model review merely to reproduce earlier findings: reuse prior findings and review changed inputs on the current candidate. Local review still uses whatever model service it invokes and is not automatically offline or free.
+
+Use `workflow_call` for genuine shared multi-job policy with typed inputs and narrowly passed secrets; composite actions for repeated step sequences. Avoid abstraction for one command, blanket secret inheritance, and unnecessary `workflow_run` chains. Keep event-specific differences explicit.
+
+## 5. Protect behavior and the verification policy
+
+Map applicable areas to meaningful checks; explain omissions rather than filling a matrix for appearance:
+
+- **Source quality:** format in check mode, lint, types/compile, shell/script checks, Actions-aware validation, generated drift, useful executable examples and local links.
+- **Behavior and journeys:** important logic, persistence, API/auth boundaries, calculations, failures/recovery, and affected supported user flows. Choose focused, integration, real-flow, property or differential checks under [testing.md](testing.md). Simulated UI is not native/device evidence; offline tests are not live-provider evidence.
+- **Build/distribution/data:** production builds and relevant package contents, fresh-output install/import/start smoke, disposable services, supported schema/migration paths, deterministic fixtures and teardown. Clean checkout/export must not depend on leftover files. Keep signing/publication separate.
+- **Security:** secret detection, relevant dependency/static analysis and container/IaC checks; narrow explained suppressions with review dates. Use current blocking policy and supported tool scope. Scanning unavailable is not zero findings.
+- **Performance/compatibility:** repeatable representative size, latency or resource checks with comparable inputs, plus supported runtime/OS/architecture/service coverage. Start noisy or unbaselined new budgets as advisory; justify enforcement. Lab numbers do not establish production behavior.
+
+Audit test value within the requested scope. Inspect assertions, fixtures, mock boundaries and plausible regressions; consolidate or prune supported waste without discarding unique protection. State sampling. A CI repair does not implicitly require a case-by-case whole-suite audit or a new test for each prompt sentence.
+
+Keep established acceptance/review policy from the trusted base or default revision when judging a proposed policy change. Identify that policy revision separately from the code under test. A PR can propose better tests and rules, but cannot make its own removal of a guard the sole reason it passes. This does not mean running only old tests: exercise new/changed tests on the candidate and compare material weakenings against the established contract. Reading trusted instructions is not permission to execute untrusted code in a privileged context.
+
+For selector, gate or policy changes, derive the validation obligation from trusted prior policy/classification or force an independently selected broader validation path. Candidate planner output cannot be the sole authority for omitting the checks that judge that planner. Run candidate code and tests without privileged credentials.
+
+For new heuristic/model checks or noisy performance budgets, record false positives and missed defects before making them blocking. Replay relevant known failures and clean controls where practical; distinguish a useful finding from a nit or a pre-existing issue. Retain existing deterministic gates. New enforcement needs a supported product/repository/user policy, not an agent's wish to add a gate. Refine one useful verification loop before adding redundant reviewers. Persist a diff-triggered incident rule only when it adds distinct value; remove obsolete rules instead of growing a permanent checklist.
+
+## 6. Reduce execution cost without weakening isolation
+
+- Use deterministic lockfile installation, explicit supported runtimes, correct working directories and pinned tools/containers. Pin external actions to full commit SHAs with version comments and maintainable updates. A faster replacement tool needs equivalent relevant diagnostics/coverage before displacing an established check; keep a fallback when compatibility is incomplete.
+- Measure cache restore and remaining install time. Key compatible dependency/build outputs by their actual lockfiles, runtime, platform, configuration and other relevant inputs. Correctness must survive a cold cache. Result reuse needs matching evidence inputs and must be labeled separately from fresh execution.
+- Share builds/setup only when compatible and useful. Keep dependency restoration, artifact transport and result reuse distinct. Prefer the smallest needed artifacts and checkout scope, while retaining complete comparison inputs. A shallow checkout that cannot identify the base is not a safe optimization.
+- Balance shards using observed durations and setup cost rather than equal file counts alone. Bound workers to available CPU/memory and measure OOM/retry behavior. Compare representative packing/runner changes before broad adoption; fewer jobs or larger machines are not objectives by themselves.
+- Use least-privilege job permissions and narrowly scoped secrets. Disable unnecessary persisted checkout credentials. Treat PR metadata, workflow outputs, plans, reports, caches and artifacts as untrusted. Avoid shell injection and unsafe report rendering.
+- Inspect fork behavior, `pull_request_target`, `workflow_run`, self-hosted persistence and cache/artifact trust. Untrusted code must not run with privileged credentials or unsafe persistent-runner access. Do not grant untrusted jobs trusted cache-writing privileges. Follow current [GitHub security guidance](https://docs.github.com/en/actions/reference/security/secure-use) for the actual event and permissions.
+- Bound service startup, network calls, retries and cleanup. Preserve exit status through log/report pipelines; cleanup and applicable uploads should run after failure without masking it. Missing/malformed required reports are failures. Optional telemetry outages do not erase correctness results or block unrelated checks.
+- Repair flakes and CI defects rather than rerunning to green, widening assertions, blanket-skipping or applying `continue-on-error`. A rerun alone does not prove flakiness. Any quarantine/removal follows the test-value policy and leaves the coverage gap visible.
+
+## 7. Report what ran, what it protects, and what it cost
+
+Implement reports in the actual Actions path, not only in the final chat. Prefer `GITHUB_STEP_SUMMARY`, annotations, existing reporters, downloadable JUnit/coverage/scan/build artifacts, and small supported scripts over a new reporting framework or service.
+
+Lead with **What was tested and why it matters**:
 
 | Behavior checked | Actual result | Why it matters | Evidence / limit |
-|---|---|---|---|
-| `<scenario and expected outcome>` | `<PASS / FAIL / SKIPPED / CANCELLED / NOT RUN>` | `<user or operational consequence prevented>` | `<current-run suite/test/report link; mocked or untested boundary>` |
+| --- | --- | --- | --- |
+| `<scenario and expected outcome>` | `<PASS / FAIL / SKIPPED / CANCELLED / NOT RUN>` | `<consequence prevented>` | `<current-run test/suite/report; mocked or untested boundary>` |
 
-Prefer a handful of concise rows with links to detail. Tie each row to exact current-run test IDs, suites, or check outcomes. A static description of a suite is not proof that its cases ran. If evidence is only at suite level, label and report at that level; do not invent per-case outcomes. Show mixed results and skips explicitly: missing, failed, cancelled, or unrun required cases cannot yield an unqualified PASS. Keep lint/build/security checks distinguishable from behavioral tests. Include **Gaps and limits** immediately below the table for important scenarios not covered, skipped tests and reasons, and simulated or untested environments. Never claim live service operation from mocked/offline tests.
+Use a handful of plain-language groups with detail linked. Derive outcomes from actual current-run IDs or reports; static suite descriptions are not execution evidence. If only suite-level evidence exists, label it. Mixed failed/skipped/missing required cases cannot produce an unqualified group PASS. Distinguish lint/build/security outcomes from behavioral evidence. Include **Gaps and limits** immediately below the table: important untested scenarios, skip reasons and environments/boundaries not exercised.
 
-For example, a verified duplicate-import test can say “Importing the same file twice does not duplicate saved records — PASS — protects totals from double counting — disposable database; live provider not exercised.” Use this only as a format example; derive actual scenarios and claims from the target's tests and run evidence. Update descriptions when coverage changes. Implement this section in CI itself, not only in the final chat report.
+Then include:
 
-When selection/caching applies, include **Why these tests ran**: actual change scope, selection mechanism, selected behavior, reused results, intentional exclusions, and any broader fallback. Separate not selected, cached, skipped, and newly executed outcomes. No fresh execution is not a fresh pass; report measured savings only against a comparable baseline. A selected local pass must not be labeled full CI readiness.
+- Run link, tested SHA/ref, event, platform/runtime/tool versions and relevant policy/plan identity. Distinguish PR head, tested merge and queue candidate. An earlier commit's result is not the final commit's result.
+- **Why these tests ran** when selection/reuse applies: comparison, mechanism, selected behavior, retained obligations, intentional omissions, fallback and reused versus freshly executed results. Not selected, cached, runner-skipped, zero discovered and failed are different states. No fresh execution is not a fresh pass.
+- Actual pass/fail/skip counts, durations, concise failures and useful diagnostics. Missing values remain unavailable, not zero.
+- Applicable coverage/changed-code evidence, security severity/scope/freshness, comparable performance/size deltas, first-attempt reliability and observed compute/critical-path data. State sample, units, method and baseline; use median/p95 only with adequate comparable observations. Do not invent billing or savings.
+- Main blocker and next useful action. Explain what a passing run does and does not establish.
 
-Retain machine-readable test results (such as JUnit), supported coverage formats, scan outputs, and applicable build/benchmark reports. Give artifacts unique run/matrix names and explicit reasonable retention. Retain useful failure diagnostics; omit secrets, owner data, unnecessary source archives, and bulky routine recordings. Escape untrusted text and never execute an artifact to render its report.
+Retain useful machine-readable results and failure traces/screenshots with unique run/matrix names and reasonable retention. Omit secrets, owner data, unnecessary source archives and bulky routine recordings. Escape untrusted text and never execute artifacts to render them. Keep independent workflows independent; a cross-workflow rollup must identify each run/candidate and cannot borrow stale scheduled success for a PR.
 
-Where useful, retain a small versioned metrics record with run/candidate identity, timestamps, environment, check outcomes, units, baseline identity, and artifact references. Missing values remain null/unavailable. Missing or malformed required reports are visible failures, not zero findings or a pass.
+Use native/offline tooling first. Investigate an external service only for an identified unmet need. Before recommending activation, verify current official eligibility, public/private limits, retention, permissions, data sent, account/token requirements, pricing/quota behavior and a native fallback. Prepare configuration disabled where activation is still unauthorized. No PR comments or external notifications without explicit authorization. Report integration status as active and verified, configured but unverified, prepared pending activation, or recommendation only.
 
-Provide job/workflow summaries where they help and a consolidated view where it reduces interpretation. Keep independent workflows independent; cross-workflow rollups must identify each run/SHA and cannot treat stale scheduled results as current PR evidence. Verify aggregation using passing, failing, skipped, cancelled, zero-test, and missing-report synthetic samples as applicable; check that behavioral claims match the evidence and failed commands retain their failure status.
+## 8. Validate the decision paths and finish
 
-## 6. Measure quality and CI health
+Match checks to the change. Run Actions-aware validation such as actionlint for workflow changes; YAML parsing alone is insufficient. Exercise selected local checks and applicable final local requirements under [testing.md](testing.md), reusing matching evidence across agents/prompts. An observed hosted gate is not a demand to reproduce the whole matrix after each local edit. Verify clean install/export when packaging, dependencies or generated inputs changed.
 
-Use metrics already produced by tools first. Capture per-run measurements immediately and historical trends only when comparable evidence exists. Omit irrelevant metrics with a reason.
+For a changed planner/aggregate/reporting path, exercise bounded synthetic cases: successful selected work; meaningful failure; planner failure/malformed output; missing history/unknown input; supported no-impact; unexpected empty collection; expected job skipped/cancelled; missing shard/report; and a changed workflow/shared fixture. Confirm selection and final status preserve the intended result. Include a relevant regression replay when available. Actionlint and a green happy path cannot prove these branches.
 
-| Metric | Reporting requirement |
-|---|---|
-| Tests/coverage | Counts, skips, suite durations, line/branch coverage where supported, changed-code coverage when measurable. State exclusions and baseline; avoid arbitrary universal coverage targets. |
-| Reliability | First-attempt pass rate over a stated sample, failure categories, rerun/recovery counts, suspected flakes. Separate cancelled/superseded runs. A successful rerun alone does not establish flakiness. |
-| Speed | Elapsed run duration, critical path, queue time; median/p95 only with sufficient timestamp evidence and a stated method. Parallel job durations are not elapsed run time. |
-| Security | Counts by tool/severity, new versus baseline findings, exceptions, scan scope, and vulnerability-data freshness. Tool outages mean unavailable evidence. |
-| Performance/size | Comparable deltas with units, inputs, variability, and enforced budgets. |
-| Resources | Observed runner minutes, artifact/cache sizes/retention, quota data where accessible. Distinguish measurements from estimates and do not invent billing costs. |
+Verify policy changes against established policy and retain candidate identity. If hosted execution is authorized and available, inspect required results on the exact final commit; otherwise state the limit. Local runner emulation does not prove GitHub's event/permission behavior. Do not push or activate a service just to obtain evidence without authorization.
 
-Baseline against the primary branch or an explicitly identified comparable candidate. If unavailable, record a first measurement without a trend claim. Do not silently compare different suite scope, tools, or platforms. Do not use retries, exclusions, softened thresholds, or replacement baselines to conceal regressions. Document sampling and retention; do not build an unbounded history crawler.
+When a check fails, distinguish a new regression, pre-existing failure and unknown origin. Use a concrete hypothesis and a bounded discriminating check before rerunning. Repeated unchanged failure calls for different evidence or a specific blocker, not an unlimited retry loop. Complete independent in-scope fixes before requesting owner review. Never weaken an assertion/gate to end the loop.
 
-## 7. Evaluate and prepare useful free integrations
+For prompt/documentation-only changes, validate links, consistency and text hygiene plus repository-mandated checks; no application or hosted matrix is implied. Describe a realistic request and expected do/skip/report behavior; exercise a disposable fixture when practical. Text validation alone cannot establish agent compliance.
 
-Default to native summaries/artifacts and open-source tools running inside CI. Add services only for a clear unmet need; reuse existing integrations instead of stacking overlapping dashboards. Free tools still consume runner/storage resources.
+Review the final diff, preserve prior work, and update existing CI docs with commands, responsibilities, authority, selection/fallback, reports, baseline and activation status. Stop after supported in-scope repairs, integration and required verification are complete or a precise external blocker remains. No endless optimization or speculative integration backlog.
 
-Verify current official plans/docs at implementation time. For each recommendation, record verification date/source, public/private eligibility, user/LOC/upload limits, relevant features/languages, retention, permissions, external data sent, account/token requirements, and quota-exhaustion behavior. Inspect actual account eligibility when accessible. Free for open source does not imply free for a private repository.
+## Handoff
 
-| Candidate | Useful role | Adoption guidance |
-|---|---|---|
-| GitHub summaries, annotations, artifacts, read-only Actions API | Run reports, diagnostics, bounded history metrics | Default foundation; verify runner/storage allowances. [Summary docs](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#adding-a-job-summary), [billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions). |
-| Existing coverage tooling + optional Codecov | Coverage history and changed-code comparisons | Native coverage works without SaaS. Assess current private-repository/user/upload eligibility before activation. [Plans](https://about.codecov.io/pricing/). |
-| SonarQube Cloud | Consolidated static analysis and quality trends | Optional if it fills a gap; verify Free/OSS limits and analysis features. [Plan docs](https://docs.sonarsource.com/sonarqube-cloud/administering-sonarcloud/managing-subscription/subscription-plans). |
-| actionlint | Workflow syntax, expressions, action inputs, script checks | Pinned local/CI validator. [Official project](https://github.com/rhysd/actionlint). |
-| Gitleaks CLI + OSV-Scanner | Secret and dependency findings | Check scope/ecosystem support; CLI and wrapper Action licensing may differ. [Gitleaks](https://github.com/gitleaks/gitleaks), [OSV-Scanner](https://google.github.io/osv-scanner/). |
-| Lighthouse CI | Repeatable web performance/audit reports | Supported isolated web builds; artifact reports without external upload by default. Begin unstable scores as advisory. [Official docs](https://github.com/GoogleChrome/lighthouse-ci/blob/main/docs/getting-started.md). |
+Lead with the concrete result and material gaps. Use **LOCALLY VERIFIED — HOSTED UNVERIFIED**, **HOSTED PASS CONFIRMED**, **BLOCKED**, or **UNVERIFIED**, scoped to the work performed. Local verification requires the applicable local contract; hosted confirmation requires observed required checks on the exact final commit. A selected test pass alone is not full CI readiness, product acceptance or release approval.
 
-These are candidates, not a mandatory installation list. Check plan eligibility for GitHub code scanning/dependency review rather than assuming private-repo access; prefer suitable CLI alternatives when hosted features require payment. Avoid new self-hosted infrastructure merely for a metrics dashboard.
+Explain what changed and why; show the decisive workflow/script branch where meaningful. Link the check/authority map and implemented behavior summaries. Report actual validation, pruning/selection scope, any remaining defect or platform gap, and comparable feedback/compute evidence or its absence. State commit/push/hosted/activation status explicitly. Identify the source and milestone effect of any remaining required work; give one bounded next action per material blocker.
 
-Implement suitable repository-only options within scope. When a service needs authorization/account activation, prepare reviewed configuration, minimal setup/permissions, verified limits, and a native fallback. Keep it disabled until activation and report its actual status. Do not post PR comments or send notifications without explicit authorization; summaries are the default reporting surface.
+## Design references
 
-## 8. Validate the implemented contract
-
-- Use an Actions-aware validator such as actionlint and inspect event conditions, expressions, paths, inputs, job dependencies, and check names. YAML parsing alone does not validate Actions semantics.
-- During local iteration, run tool-selected affected checks and explicit risk-driven additions. At final CI qualification, run locally reproducible checks required by the target's local acceptance contract, including relevant integration/build/security/reporting checks. Do not interpret the hosted PR gate list as a mandate to rerun full CI after each edit. Reuse still-valid evidence and explain any required full local run. Check clean-install/export behavior when dependency, package, or generated-input logic changes.
-- Inspect side effects first; use disposable synthetic services/state and finite timeouts. Verify a representative local environment and identify remaining hosted/platform matrix entries. Local runner emulation does not prove GitHub behavior.
-- Exercise applicable failure, missing-data, and intentional-skip reporting/gate behavior without touching production. Ensure report generation preserves failures and required missing/skipped checks cannot produce false-green status.
-- Distinguish existing failures from regressions; retain sanitized evidence and repair defects introduced by this pass. Do not repeat unchanged passing suites without a reason. Continue independent checks around concrete blockers.
-- For documentation/prompt-only edits, inspect consistency, references, links, and the diff; no application suite is needed unless executable behavior changed.
-- Review the final diff for scope/security and preserved work. Update existing CI docs and relevant tracker/handoff with workflow responsibilities, commands, gate policy, report locations, baseline rules, integrations, and deferred checks.
-- If hosted runs are authorized/available, inspect required checks on the exact final commit. Do not push or activate services simply to obtain hosted evidence without authorization.
-
-## Acceptance and stop conditions
-
-Every relevant category has a supported implementation or a specific omission/blocker. Events and workflow boundaries match their responsibilities. Required checks cover supported components and important behavior, with no concealed configuration defect or false-green route. Applicable local gates pass or unresolved failures are reported explicitly. Summaries, retained reports, and attributable metrics are implemented and failure handling is checked. Integration choices have current eligibility evidence and accurate activation status.
-
-Stop when the CI contract, reporting, relevant validation, documentation, and handoff are complete. Continue independent work around blockers; do not perform unrelated rewrites, endless reruns, external activation, or release operations to claim readiness.
-
-## Final report
-
-Use this structure. Keep the chat report concise and link detailed evidence.
-
-# CI Readiness Report
-
-## Overall status
-
-**Expected pull-request result:** LOCALLY READY — HOSTED UNVERIFIED | HOSTED PASS CONFIRMED | BLOCKED | UNVERIFIED
-
-Explain the result in one paragraph. LOCALLY READY requires applicable locally reproducible required gates to pass, with hosted/platform limits stated. HOSTED PASS CONFIRMED requires observed required checks on the exact final commit: identify tested SHA(s) and run links. BLOCKED means a known required failure/unmet requirement; UNVERIFIED means insufficient evidence for readiness. A prior commit's pass does not qualify changed source.
-
-## Workflow and check map
-
-| Workflow / exact check | Purpose | Event / platform | Required or advisory | Actual or expected result |
-|---|---|---|---|---|
-| `<name>` | `<behavior>` | `<trigger/matrix>` | `<policy>` | Expected pass / Observed pass / Unverified / Blocked / Intentional skip |
-
-Explain skips and distinguish recommended repository settings from applied configuration.
-
-## Validation performed
-
-Start with the same plain-language behavior/result/importance/evidence summary used in CI, followed by material gaps and limits. Explain what the checks establish before presenting commands or metrics. State test-audit coverage and unresolved weak or low-value cases; do not imply every test was reviewed if the audit was sampled.
-
-| Validation | PASS / FAIL / NOT RUN / N/A | Evidence and candidate |
-|---|---|---|
-| `<check/suite/build/scan/report/platform>` | `<actual result>` | `<command/run link; SHA or dirty-worktree identity>` |
-
-Separate inspection, local execution, and hosted evidence. Include material omissions; never mark unrun validation PASS.
-
-## Quality and CI health
-
-| Metric | Measured value | Baseline / delta | Evidence / sample / limit |
-|---|---|---|---|
-| `<useful metric>` | `<units or unavailable>` | `<comparable baseline or none>` | `<report/run link and scope>` |
-
-Link implemented summaries/reports and identify unverified hosted rendering. Do not fill the table with invented measurements.
-
-## Changes and integrations
-
-Summarize what changed, why, and resulting coverage/reporting. State integration status: active and verified, configured but unverified, prepared pending activation, or recommended only. Include verified free-tier limits/source/date, external data sent, and setup still required.
-
-## Remaining work
-
-List material blockers, unverified checks/environments, and up to five prioritized follow-ups with one bounded next action each. State actual commit/push/hosted-run status. Omit speculative backlog; technical CI success is separate from owner acceptance and release approval.
+[Vincent Koc's CI case study](https://vincent.build/openclaw-ci-cost-reduction/) and [the Claude Code team's verification article](https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/) informed this revision. They are case studies, not authority to copy another repository's tools, deletion targets, gate exceptions or release policy. Apply the target's measured needs and governing contract.

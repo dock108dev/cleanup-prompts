@@ -37,8 +37,8 @@ Consider every catalog entry for applicability, but read full instructions only 
 | [Error handling](abend.md) | Failure, retry, timeout, cancellation, logging, fallback, or recovery paths |
 | [Security](security.md) | Trust boundaries, permissions, input handling, secrets, dependency changes, browser/native boundaries, or security review |
 | [Sources of truth](ssot.md) | Duplicated rules/configuration, conflicting ownership, repeated policy, or parallel implementations |
-| [Test value audit and selection](testing.md) | Tests or tested behavior affected by the scope, wasteful local test execution, requested test-quality/tooling review, or a full audit; inspect purpose, assertions, and available selection tools |
-| [CI readiness](ci.md) | Workflows, build/test tooling, dependency/runtime changes affecting gates, or requested CI review |
+| [Test value, pruning, and selection](testing.md) | Tests or tested behavior affected by the scope, requested pruning, wasteful local execution, test-quality/tooling review, or a full audit; inspect independent contracts, assertion value, and available selection tools |
+| [CI design and efficiency](ci.md) | Workflows, build/test tooling, dependency/runtime changes affecting gates, or requested CI review; establish gate authority and measure relevant waste before optimizing |
 | [Next Steps](next_steps.md) | An identified Next Steps document whose status or remaining plan needs reconciliation within the request |
 
 Do not route exclusively by filename: follow affected behavior and shared dependencies. Use concrete reasons for skips, such as no UI in scope, no persistent store, or no identified Next Steps document. Distinguish not applicable from applicable but blocked/unverified. A source-only UI review cannot establish rendered quality.
@@ -56,6 +56,8 @@ Shared prompt language about implementation remains bounded by this run's select
 Existing authorization remains valid. The cleanup request alone does not authorize commits, pushes, publishing, production migrations, live provider activity, paid services, or replacing installed builds. Complete independent local work before asking for a genuinely required decision; identify the exact blocked action and reason.
 
 ## Verification and stopping
+
+Identify the source and checkpoint of a requirement before treating it as a blocker: observed merge rule, explicit local instruction, product/release requirement, or recommendation. An inherited job or benchmark is not automatically an owner-approved acceptance gate. Preserve active requirements until an authorized policy change; explain which milestone they actually govern. New advisory checks must not silently become completion gates.
 
 Use the target's mandatory checks at their required checkpoint and the selected prompts' applicable verification requirements. For local iteration, discover and prefer supported affected-test/incremental commands using the [test-selection policy](testing.md). Include working-tree changes and transitive dependencies; explain selection and any broader fallback. Do not reproduce full CI locally by default, use changed-file counts as a risk threshold, or treat hosted merge gates as an instruction to rerun them after every edit. Honor explicit local requirements; run consolidated final checks once when required. Documentation-only work generally needs links/consistency checks and `git diff --check`, unless the target requires more.
 

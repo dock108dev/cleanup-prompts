@@ -1,12 +1,14 @@
-# Test value audit and efficient execution
+# Behavior contracts, test pruning, and efficient execution
 
-Audit whether the tests in scope protect behavior that matters, then improve weak coverage and explain the evidence in plain language. A large passing count is not the outcome: the reader should understand what could break, which test would catch it, and what remains unproven.
+Strengthen meaningful protection, prune unsupported assertions, and choose the smallest useful verification. Explain what could break, which test would catch it, and what remains unproven. A smaller suite with the same meaningful protection can be a successful result.
 
 Follow the [playbook](playbook.md) for scope, audit-only mode, preservation, authorization, and stopping. Use the [CI prompt](ci.md) when implementing workflow reporting; this prompt owns test-value review. Do not expand a targeted cleanup into an unsolicited rewrite of the entire suite.
 
-## 1. Establish what deserves protection
+## 1. Establish behavior and independent expectations
 
-Read product requirements, supported workflows, relevant implementation, test discovery/configuration, fixtures, assertions, and CI commands. Identify the important user outcomes and engineering contracts in scope: successful journeys, data integrity, permissions, calculations, compatibility, failure handling, and recovery as applicable.
+Start with requirements, supported workflows, documented contracts, and relevant source records. Identify outcomes in scope: journeys, data integrity, permissions, calculations, compatibility, failure handling, and recovery. State the expected result and its source before accepting implementation output as correct. Then inspect implementation, discovery/configuration, fixtures, assertions, and CI commands. Derive expected examples independently, using hand-checkable calculations or authoritative references; copying the implementation creates a shared blind spot.
+
+For changed behavior, distinguish an intended contract change from a regression. A failing assertion is evidence to investigate, not permission to replace its expected value with the new output. When requirements conflict or an oracle is uncertain, explain the competing expectations and the evidence needed to resolve them; continue independent work.
 
 Inventory every in-scope test case, including meaningful parameterized cases. Group cases with the same purpose for reporting, but inspect their assertions and setup rather than inferring value from names. Compare collected tests with the tests CI actually runs; identify disabled, skipped, quarantined, excluded, and never-discovered cases. For a full audit, cover the entire suite. If coverage is sampled or incomplete, state exactly what was reviewed and leave the remainder unverified; do not claim every test was audited.
 
@@ -20,8 +22,22 @@ For each case or closely related group, answer:
 - **Realism and boundary:** Does the setup exercise the relevant implementation? Do mocks replace the behavior being claimed? Distinguish isolated logic, integration, simulated UI, real platform execution, and live-service evidence.
 - **Distinct contribution:** Does this case cover a different boundary, input, platform, or regression? Overlap across unit and integration layers can be valuable; similar names do not establish redundancy.
 - **Trustworthiness:** Can the assertion pass vacuously, swallow an error, compare a result with itself, copy the implementation's calculation, depend on order/time/network, or accept an overly broad outcome? Could the suite pass with no tests collected?
+- **Maintenance cost:** Does it fail on harmless refactoring or force repetitive snapshot updates? Is its runtime, setup, or instability justified by distinct protection? Use observed evidence, not the amount of test code alone.
 
-Assign a supported disposition: **keep**, **strengthen**, **consolidate**, **remove**, or **investigate**. Keep useful regression, compatibility, invariant, and smoke checks even when their value is indirect. Do not remove a test merely because it is old, slow, mocked, or duplicates a code path. Before consolidation/removal, identify the replacement coverage and show that no unique behavior or required contract is lost. Unclear value calls for investigation, not automatic deletion.
+Assign a supported disposition: **keep**, **strengthen**, **consolidate**, **remove**, or **investigate**. Keep useful regression, compatibility, invariant, and smoke checks even when their value is indirect. Do not remove a test merely because it is old, slow, mocked, flaky, or duplicates a code path. Unclear value calls for investigation, not automatic deletion.
+
+### Prune tests that no longer earn their cost
+
+Treat pruning as a first-class outcome, with evidence rather than a deletion quota. Inspect these candidates:
+
+| Candidate | Useful question / action |
+| --- | --- |
+| Assertions coupled to implementation | Does a harmless helper rename, private call order, or structure change break the test while behavior stays correct? Prefer observable assertions; retain structure checks when that structure is a documented requirement. |
+| Source-string or snapshot assertions | Does it check meaningful output or merely a chosen source spelling? Retain artifact/schema/policy checks when those are the deliverable. Never refresh a snapshot without reviewing the difference. |
+| Assertions that a deleted feature is absent | Is absence still required, or just a record of a one-time deletion? Check callers and requirements. Keep negative contracts that prevent an authorization bypass, private-field exposure, or an incompatible endpoint. |
+| Tests that cannot catch a plausible defect | Can an unconditional pass, swallowed exception, empty loop, or mocked answer satisfy it regardless of behavior? Strengthen it if the contract matters; otherwise record why it is removed. |
+
+Before consolidation/removal, identify surviving tests for each required behavior, or cite why the requirement is obsolete. Do not replace distinct historical regressions with one generic happy-path test. Remove dead fixtures/helpers only within scope and after checking remaining uses. A passing suite after deletion does not prove retained protection. Do not impose arbitrary deletion counts, test-line reductions, or test-to-source ratios as gates.
 
 Use a compact review map in the existing testing/CI documentation or the requested audit report:
 
@@ -31,13 +47,22 @@ Use a compact review map in the existing testing/CI documentation or the request
 
 Keep identifiers traceable and group rows for readability. Do not introduce a separate tracking system or duplicate the test suite in prose. In audit-only mode, report findings without editing tests or configuration.
 
-## 3. Repair supported weaknesses
+## 3. Choose verification and repair supported weaknesses
 
-Prioritize missing or weak checks for important behavior over increasing test counts. Add or strengthen tests for concrete risks and regressions, using independently justified expected results and assertions on observable outcomes. Include relevant negative, boundary, and recovery cases. Rename vague tests so their scenario and expected result are clear.
+Choose verification from the claim and the likely failure, using existing tools and coverage first. Combine methods when they cover different risks; do not require every method for every change:
+
+| Method | Useful when / evidence limit |
+| --- | --- |
+| Focused unit or component test | A calculation, branch, state transition, or interface has a precise expected outcome. Exercise the relevant implementation; state any mocked boundary. |
+| Actual supported user flow | The claim concerns wiring, UI interaction, persistence across steps, or startup/install behavior. Run the application through the normal entry point with disposable state; a helper call alone cannot prove the flow. |
+| Property or invariant check | Many valid inputs should preserve a rule such as import idempotence, balance conservation, or round-trip consistency. Derive the rule independently, bound generation, and retain a reproducible failing example. Do not invent a property the product does not promise. |
+| Differential check | A refactor, optimization, or replacement should preserve established behavior. Compare representative inputs against a justified reference or unchanged baseline, isolating intended differences. Agreement can reproduce an old bug and cannot alone establish correctness. |
+
+Prioritize important missing/weak checks over counts. Add tests for concrete risks and regressions with independent expectations, including relevant negative, boundary, and recovery cases. Name the scenario and expected result clearly. Do not add tests solely because code changed, to replace every deletion, or to meet a minimum count. A reversible low-impact edit may need only existing relevant checks and inspection.
 
 For a suspicious or high-value assertion, use a focused negative control or temporary mutation in disposable state when practical: introduce the plausible defect and confirm the intended assertion catches it. A setup/import failure is not proof that the behavioral assertion works. Restore the mutation and verify the final state. Record which cases were exercised this way; inspection alone must not be described as demonstrated defect detection. Whole-suite mutation testing is optional, not a universal gate.
 
-Preserve useful coverage when simplifying redundant setup/cases. Fix unstable dependencies where feasible; do not hide failures with retries, broad skips, relaxed assertions, or threshold changes. Use isolated synthetic data and honor existing limits on external activity.
+Preserve useful coverage when simplifying setup/cases. Fix unstable time, ordering, network, or fixture dependencies where feasible; do not hide failures with retries, broad skips, relaxed assertions, or threshold changes. Do not delete the sole useful flaky guard: repair it, replace it with equivalent protection, or record the unresolved gap under the target's existing quarantine policy and authority. Use isolated synthetic data and honor existing limits on external activity.
 
 Choose execution using the policy below and the target's applicable requirements. Verify discovery and skip reasons, and confirm tests exercise the final implementation. Do not add tests that merely mirror the implementation or inflate percentages.
 
@@ -91,8 +116,12 @@ Use a handful of meaningful groups, with detail available in linked results. Der
 
 Include a short **Gaps and limits** section for important untested behavior, skipped cases and reasons, simulated boundaries, and environments not exercised. Keep detailed counts, coverage, timing, and diagnostics below the behavior summary. Never translate a mocked or offline pass into a claim about live operation or overall product readiness.
 
-For selected runs, add **Why these tests ran**: change scope/base, selection mechanism, affected behavior, executed versus reused results, intentionally unselected suites, and any fallback reason. Distinguish not selected from a runner skip and from a failure to discover tests. Link selection details where available; do not list every omitted case in the overview or present a selected pass as a full-suite pass. For example: “Import logic changed; the dependency-aware runner selected importer and storage checks. UI tests were not selected. Full merge CI remains pending.” Use only actual evidence for counts and saved time.
+For pruning, summarize what was removed or consolidated, why it had low value, and where still-required behavior remains protected. Link the review map or diff for detail. Separate demonstrated defect detection from inspection and execution alone. Report measured runtime or maintenance improvements only when comparable evidence exists; fewer test lines do not establish a faster or safer suite.
+
+For selected runs, add **Why these tests ran**: change scope/base, mechanism, affected behavior, executed versus reused results, intentionally unselected suites, and fallback reasons. Distinguish not selected, runner skips, and failed discovery. Link detail rather than listing every omission. A selected pass is not a full-suite pass: “Importer and storage checks passed; UI tests were not selected; full merge CI remains pending.” Use actual evidence for counts and saved time.
 
 ## Acceptance and handoff
 
-The defined scope is inspected, each reviewed case has a defensible purpose or a specific finding, important gaps are visible, supported in-scope repairs are verified, and any requested CI summary is implemented. Report audit coverage, meaningful behaviors protected, changes and reasons, actual checks/results, and remaining gaps. Separate local evidence from hosted CI and owner acceptance. Passing text checks on this prompt do not prove that a future agent will perform the audit correctly.
+The defined scope is inspected, each reviewed case has a defensible purpose or a specific finding, important gaps are visible, supported repairs/pruning are verified, and any requested CI summary is implemented. Report audit coverage, behavior and expectation sources, retained protection, changes and reasons, actual checks/results, and remaining gaps. Separate local evidence from hosted CI and owner acceptance. Passing text checks on this prompt do not prove that a future agent will perform the audit correctly.
+
+Design references: the [test-pruning proposal](https://x.com/mazeincoding/status/2122718134679298058) motivates reviewing brittle, obsolete, and ineffective tests; it does not justify deleting every absence check or install a command. The [Claude Code verification article](https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/) informs observable flows, invariants, and independent references. Choose techniques for the target; workflow-policy governance belongs in the [CI prompt](ci.md).

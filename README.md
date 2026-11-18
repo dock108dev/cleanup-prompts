@@ -45,7 +45,9 @@ To update a linked installation, review upstream changes and run `git pull --ff-
 | “Run cleanup for the backend” | Limit implementation and checks to that subsystem and its affected contracts |
 | “Audit our test cases for value, no edits” | Review each in-scope test's purpose, assertions, and gaps; report what it protects |
 | “Improve our tests and make CI results meaningful” | Repair supported test weaknesses and summarize what ran, why it matters, and what remains unproven |
+| “Prune weak tests in this subsystem” | Remove or consolidate demonstrated waste while preserving distinct behavior, security, and compatibility contracts |
 | “Make local testing selective instead of rerunning full CI” | Discover stack-supported selection/caching, implement a bounded integration where appropriate, and explain fallback rules |
+| “Overhaul our CI for faster feedback and less waste” | Establish gate authority and a measured baseline, then improve selection, setup, scheduling, and reporting without concealing failures |
 | “Run broader cleanup across this repo” | Consider all applicable maintenance areas across the repository |
 | “Run a full audit, no edits” | Review the repository and report findings without changing source or configuration |
 | “Run a full audit and fix the findings” | Review broadly and implement supported in-scope repairs |
@@ -61,11 +63,13 @@ A clean working tree triggers bounded triage by default, not an unsolicited whol
 - [Error handling](abend.md): failure diagnosis, retries, cancellation, and operational clarity.
 - [Security](security.md): trust boundaries, dependencies, secrets, and supported repairs.
 - [Sources of truth](ssot.md): shared ownership and duplicated policy.
-- [Test value audit and efficient execution](testing.md): test purpose, assertion quality, coverage gaps, stack-supported local selection, and avoiding redundant full-suite runs.
-- [CI readiness](ci.md): workflows, checks, security, reproducibility, and reporting.
+- [Test value, pruning, and efficient verification](testing.md): independent behavior contracts, evidence-based pruning, suitable verification methods, and stack-supported local selection.
+- [CI design and efficiency](ci.md): gate authority, measured waste, safe affected-work planning, event responsibilities, secure execution, and meaningful reporting.
 - [Next Steps reconciliation](next_steps.md): reconcile an identified planning document with completed and remaining work.
 
 You can use these prompts individually. UI work follows the target project's design requirements and any design references that project supplies; no companion template repository is required.
+
+CI improvements compare feedback time and compute use; another project's savings are not a target for yours. Test pruning needs evidence that useful protection remains. These prompts do not install a selector, change repository settings, or establish savings merely by being updated.
 
 ## Boundaries
 
