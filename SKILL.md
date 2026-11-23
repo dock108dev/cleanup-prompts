@@ -8,3 +8,5 @@ description: Run a shared cleanup harness for a target repository. Use for reque
 Read [harness.md](harness.md) beside this file and follow its linked playbook and prompt catalog. Resolve these files relative to this skill's installed directory, following a directory symlink to the shared clone when present. Load selected prompts at execution time rather than copying their instructions into the target repository.
 
 Use the user's current or named repository as the target. The skill's own repository is not the target unless explicitly requested. Preserve the requested breadth and audit-only versus implementation mode. If supporting files are missing, report the incomplete installation and ask for the shared clone's location; do not silently substitute a generic cleanup workflow.
+
+Apply the playbook's sole-customer scope: UI/UX redesign, visual polish, persona or usability studies, and design acceptance are excluded unless explicitly requested. Relevant functional correctness, security, and recovery checks remain in scope.

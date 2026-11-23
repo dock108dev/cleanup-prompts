@@ -7,6 +7,7 @@ Update the project documentation to explain the current software clearly, and cl
 - Read the README, applicable repository instructions, relevant source and configuration, and Git status. Build on useful existing docs.
 - Use judgment about how much to inspect. Focus on what readers need to understand, run, test, and maintain the project.
 - Make routine cleanup decisions without asking for confirmation. Leave unrelated code changes alone and flag larger product or architecture decisions briefly.
+- While the owner is the sole customer, keep UI/UX redesign, visual polish, persona or usability studies, and design acceptance out of scope unless explicitly requested. Do not restore archived design plans as active requirements; keep documentation of existing functional behavior accurate.
 - Local notes and development artifacts do not need special archival treatment. Clean them up as part of this pass when useful; the maintainer generally handles their ongoing local organization.
 
 ## Documentation

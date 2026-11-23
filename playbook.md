@@ -14,6 +14,8 @@ Treat breadth and permission to edit as separate choices. Carry forward the user
 
 An explicitly named prompt, directory, issue, or subsystem narrows the work unless the user says otherwise. A larger scope expands coverage, not permission to change product behavior or perform external actions.
 
+While the owner is the sole customer, UI/UX redesign, visual polish, persona or usability studies, and design acceptance are out of scope unless explicitly requested. Do not revive archived design plans or use them as completion gates. Preserve existing application behavior and verify functional correctness, security, and recovery where the change requires it, including frontend behavior.
+
 For a clean working tree with no requested range, perform a bounded read-only triage of repository instructions, manifests, workflows, documented checks, and obvious inconsistencies. Report that there is no local diff. Do not silently audit the whole repository, select an arbitrary previous commit, or manufacture edits. If evidence identifies a concrete routine cleanup within that triage, explain it and apply it in cleanup mode.
 
 ## Establish the starting state
@@ -32,7 +34,6 @@ Consider every catalog entry for applicability, but read full instructions only 
 | --- | --- |
 | [Repository cleanup](cleanup.md) | Structure, readability, oversized files, ignore rules, tracked artifacts, or general code hygiene |
 | [Documentation](docs.md) | Changed behavior or commands needing documentation, stale instructions, broken references, or doc organization |
-| [UI and UX](ui-ux-cleanup.md) | Screens, components, interactions, accessibility, layout, or user-facing copy; inspect affected rendered UI where possible |
 | [Backend and database](backend-db-cleanup.md) | APIs, persistence, transactions, migrations, jobs, data meaning, or backend performance |
 | [Error handling](abend.md) | Failure, retry, timeout, cancellation, logging, fallback, or recovery paths |
 | [Security](security.md) | Trust boundaries, permissions, input handling, secrets, dependency changes, browser/native boundaries, or security review |
@@ -41,9 +42,9 @@ Consider every catalog entry for applicability, but read full instructions only 
 | [CI design and efficiency](ci.md) | Workflows, build/test tooling, dependency/runtime changes affecting gates, or requested CI review; establish gate authority and measure relevant waste before optimizing |
 | [Next Steps](next_steps.md) | An identified Next Steps document whose status or remaining plan needs reconciliation within the request |
 
-Do not route exclusively by filename: follow affected behavior and shared dependencies. Use concrete reasons for skips, such as no UI in scope, no persistent store, or no identified Next Steps document. Distinguish not applicable from applicable but blocked/unverified. A source-only UI review cannot establish rendered quality.
+Do not route exclusively by filename: follow affected behavior and shared dependencies. Use concrete reasons for skips, such as no persistent store or no identified Next Steps document. Distinguish not applicable from applicable but blocked/unverified.
 
-Choose ordering from dependencies: resolve correctness and shared-contract issues before polishing dependent surfaces; reconcile docs with the final behavior. Combine duplicate findings and run shared checks once when they cover the same final state.
+Choose ordering from dependencies: resolve correctness and shared-contract issues before dependent changes; reconcile docs with the final behavior. Combine duplicate findings and run shared checks once when they cover the same final state.
 
 ## Execute a bounded pass
 
@@ -51,7 +52,7 @@ Before editing, identify the concrete issues and observable completion checks fo
 
 In cleanup mode, make evidence-backed repairs directly. Preserve product intent, user data, unrelated edits, staged work, retained evidence, and installed/frozen builds. A dirty tree is expected; do not reset, automatically stash, reformat unrelated files, or stage all changes as preparation.
 
-Shared prompt language about implementation remains bounded by this run's selected scope and audit-only setting. Do not turn a targeted CI change into a new integrations project, a UI pass into new features, or a structure review into an architecture rewrite. Record consequential out-of-scope discoveries as bounded follow-ups.
+Shared prompt language about implementation remains bounded by this run's selected scope and audit-only setting. Do not turn a targeted CI change into a new integrations project or a structure review into an architecture rewrite. Record consequential out-of-scope discoveries as bounded follow-ups.
 
 Existing authorization remains valid. The cleanup request alone does not authorize commits, pushes, publishing, production migrations, live provider activity, paid services, or replacing installed builds. Complete independent local work before asking for a genuinely required decision; identify the exact blocked action and reason.
 

@@ -7,6 +7,7 @@ Work from the code in front of you. Build on existing documentation and maintena
 ## Scope and working approach
 
 - Follow the user's requested scope. These are implementation prompts: make routine, supported code and documentation fixes directly. Use audit-only mode only when the user asks for a review without changes.
+- While the owner is the sole customer, exclude UI/UX redesign, visual polish, persona or usability studies, and design acceptance unless explicitly requested. Existing frontend behavior still needs relevant correctness, security, and recovery checks; structural cleanup does not authorize a design pass.
 - Before editing, read the current README, relevant tracker, candidate identity, Git status, and applicable maintenance decisions. Check supported modes and existing work so the pass builds on the current project.
 - Preserve unrelated changes, evidence, editable masters, owner data, frozen builds, and prepared review artifacts. Do not reset, discard, commit, push, publish, or release without authorization. If a review candidate must remain fixed, work separately and identify the resulting source changes.
 - Existing authorization carries forward. This prompt alone does not authorize live collection, provider spending, owner-data access or migration, signed builds, or external operations.

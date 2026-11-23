@@ -58,7 +58,6 @@ A clean working tree triggers bounded triage by default, not an unsolicited whol
 
 - [Repository cleanup](cleanup.md): structure, readability, file-size review, ignores, and tracked artifacts.
 - [Documentation](docs.md): current documentation, comments, links, and documented workflows.
-- [UI and UX](ui-ux-cleanup.md): visual design, interactions, accessibility, layouts, and concise copy.
 - [Backend and database](backend-db-cleanup.md): integrity, transactions, jobs, migrations, contracts, and recovery.
 - [Error handling](abend.md): failure diagnosis, retries, cancellation, and operational clarity.
 - [Security](security.md): trust boundaries, dependencies, secrets, and supported repairs.
@@ -67,7 +66,7 @@ A clean working tree triggers bounded triage by default, not an unsolicited whol
 - [CI design and efficiency](ci.md): gate authority, measured waste, safe affected-work planning, event responsibilities, secure execution, and meaningful reporting.
 - [Next Steps reconciliation](next_steps.md): reconcile an identified planning document with completed and remaining work.
 
-You can use these prompts individually. UI work follows the target project's design requirements and any design references that project supplies; no companion template repository is required.
+You can use these prompts individually. While the owner is the sole customer, UI/UX redesign, visual polish, persona or usability studies, and design acceptance are out of scope unless explicitly requested. Functional correctness, security, and recovery checks for existing frontend behavior remain in scope when relevant.
 
 CI improvements compare feedback time and compute use; another project's savings are not a target for yours. Test pruning needs evidence that useful protection remains. These prompts do not install a selector, change repository settings, or establish savings merely by being updated.
 

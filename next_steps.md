@@ -8,6 +8,8 @@ The intended structure is:
 
 Read the project’s repository instructions, current requirements, active plan, implementation status, and relevant evidence before editing. Establish the completion goal from those sources and preserve the agreed scope.
 
+While the owner is the sole customer, UI/UX redesign, visual polish, persona or usability studies, and design acceptance are out of scope unless explicitly requested. Remove those items from the active execution plan rather than carrying archived design requirements forward as completion gates. Preserve relevant functional correctness, security, and recovery work for existing frontend behavior.
+
 **1. Move completed work into repository docs**
 
 For each completed slice, move its useful information into the appropriate existing repository documentation. Create a document only when no suitable destination exists.
